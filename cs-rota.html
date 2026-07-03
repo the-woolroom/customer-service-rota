@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Customer Service Rota — The Wool Room</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --border: #e2ddd8;
+    --text: #1a1814;
+    --muted: #7a746c;
+    --accent: #4a7c59;
+    --accent-dark: #37603f;
+    --warn: #c0392b;
+    --working: #e3f0e8;
+    --holiday: #fbe1dd;
+    --off: #ececea;
+    --showroom: #efe6f7;
+    --showroom-text: #6a3f96;
+    --meeting: #dce8f7;
+    --meeting-text: #2d5a8f;
+    --bankhol: #fdeccb;
+    --bankhol-text: #8a5a12;
+    --pattern-text: #37603f;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .wrapper { max-width: 1500px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  h1 { font-size: 20px; font-weight: 700; }
+  .subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  button {
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: var(--accent-dark); }
+  button.danger { color: var(--warn); }
+  button.small { padding: 4px 8px; font-size: 12px; font-weight: 500; }
+
+  input[type="text"], input[type="time"], input[type="date"], input[type="number"], select, textarea {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: #fff;
+    color: var(--text);
+  }
+
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  nav.tabs button.tab-btn {
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    background: none;
+    padding: 10px 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  nav.tabs button.tab-btn:hover { color: var(--text); border-color: var(--border); }
+  nav.tabs button.tab-btn.active { color: var(--accent-dark); border-color: var(--accent); }
+
+  .tab-page.hidden { display: none; }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .week-nav { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .week-nav .range { min-width: 190px; text-align: center; }
+  .toolbar .right-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .clock-strip {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+  .clock-strip .clock b { font-size: 15px; }
+  .clock-strip .muted { color: var(--muted); font-size: 12px; }
+
+  .banner {
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .banner.holiday { background: var(--bankhol); color: var(--bankhol-text); border: 1px solid #eecb8f; }
+  .banner.warn { background: var(--holiday); color: var(--warn); border: 1px solid #f0b7ac; }
+  .banner.ok { background: var(--working); color: var(--accent-dark); border: 1px solid #bfe0cc; }
+  .banner ul { margin: 4px 0 0 18px; }
+
+  .grid-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+
+  table.rota { border-collapse: collapse; width: 100%; min-width: 980px; }
+  table.rota th, table.rota td {
+    border: 1px solid var(--border);
+    padding: 6px;
+    vertical-align: top;
+    font-size: 12.5px;
+  }
+  table.rota thead th {
+    background: #fbfaf8;
+    text-align: left;
+    font-size: 12px;
+    color: var(--muted);
+    position: sticky;
+    top: 0;
+  }
+  table.rota thead th .daynum { display: block; font-weight: 700; color: var(--text); font-size: 13px; }
+  table.rota .name-col { width: 140px; font-weight: 600; background: #fbfaf8; position: sticky; left: 0; }
+  table.rota .office-row td { background: #f1efe9; font-weight: 700; color: var(--accent-dark); padding: 6px 8px; }
+  table.rota .coverage-row td { background: #faf9f6; }
+  table.rota .daycell { width: 130px; min-width: 130px; cursor: pointer; }
+  table.rota .daycell:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  .status-working { background: var(--working); }
+  .status-holiday { background: var(--holiday); }
+  .status-off { background: var(--off); color: var(--muted); }
+
+  .cell-times { font-weight: 600; }
+  .cell-lunch { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .cell-note { font-style: italic; font-size: 11.5px; margin-top: 2px; color: #5a5449; }
+  .cell-pattern { font-size: 10.5px; font-weight: 700; color: var(--pattern-text); text-transform: uppercase; letter-spacing: .02em; }
+  .tag { display: inline-block; border-radius: 4px; padding: 1px 5px; font-size: 10.5px; font-weight: 600; margin-top: 3px; margin-right: 3px; }
+  .tag.showroom { background: var(--showroom); color: var(--showroom-text); }
+  .tag.meeting { background: var(--meeting); color: var(--meeting-text); }
+  .tag.bankhol { background: var(--bankhol); color: var(--bankhol-text); }
+
+  .coverage-icon { font-size: 15px; }
+  .coverage-ok { color: var(--accent-dark); }
+  .coverage-bad { color: var(--warn); font-weight: 700; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .panel h2 { font-size: 15px; margin-bottom: 10px; }
+  .panel .hint { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+
+  table.team-table, table.patterns-table, table.holidays-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+  table.team-table th, table.team-table td,
+  table.patterns-table th, table.patterns-table td,
+  table.holidays-table th, table.holidays-table td { padding: 5px 6px; font-size: 12.5px; text-align: left; }
+  table.team-table th, table.patterns-table th, table.holidays-table th { color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  table.team-table input, table.team-table select,
+  table.patterns-table input, table.patterns-table select { width: 100%; }
+  table.patterns-table input[type="number"] { width: 46px; text-align: center; padding: 6px 2px; }
+  table.patterns-table input[type="time"] { width: 90px; }
+  table.patterns-table input.sp-name { min-width: 130px; }
+
+  .holiday-list { font-size: 12.5px; max-height: 160px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px; margin-bottom: 8px; }
+  .holiday-list .hrow { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--border); }
+  .holiday-list .hrow:last-child { border-bottom: none; }
+
+  .cal-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 600; }
+  table.cal { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  table.cal th { padding: 6px; font-size: 12px; color: var(--muted); text-align: left; }
+  table.cal td {
+    border: 1px solid var(--border); vertical-align: top; height: 96px;
+    padding: 5px; font-size: 11.5px; cursor: pointer;
+  }
+  table.cal td:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
+  table.cal td.other-month { background: #f5f4f1; color: var(--muted); }
+  table.cal td.not-planned { background: #fcfcfb; }
+  .cal-daynum { font-weight: 700; font-size: 12.5px; margin-bottom: 3px; }
+  .cal-person-off { color: var(--warn); font-size: 10.5px; display: block; }
+  .cal-warn { color: var(--warn); font-size: 10.5px; font-weight: 700; }
+
+  .timeline-date-label { font-weight: 700; font-size: 14px; margin-bottom: 10px; }
+  .timeline-daypicker { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .timeline-day-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .timeline-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; font-size: 12px; color: var(--muted); }
+  .timeline-legend span { display: flex; align-items: center; gap: 6px; }
+  .tl-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
+  .timeline-scroll { overflow-x: auto; }
+  #timelineChart { min-width: 720px; }
+  .timeline-ruler-row { display: flex; }
+  .tl-name-spacer { width: 150px; flex-shrink: 0; }
+  .timeline-axis { position: relative; flex: 1; height: 22px; border-bottom: 1px solid var(--border); }
+  .timeline-axis .hr-label { position: absolute; top: 0; font-size: 11px; color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
+  .timeline-office-header { font-weight: 700; color: var(--accent-dark); background: #f1efe9; padding: 5px 8px; margin-top: 8px; border-radius: 4px; font-size: 12.5px; }
+  .timeline-row { display: flex; align-items: center; min-height: 42px; border-bottom: 1px solid var(--border); }
+  .timeline-row .tl-name { width: 150px; flex-shrink: 0; font-weight: 600; font-size: 12.5px; padding-right: 8px; }
+  .timeline-row .tl-track { position: relative; flex: 1; height: 26px; background: #f5f4f1; border-radius: 4px; }
+  .tl-track-empty { display: flex; align-items: center; padding-left: 8px; }
+  .tl-offlabel { font-size: 12px; color: var(--muted); }
+  .tl-bar { position: absolute; top: 0; height: 100%; border-radius: 4px; background: var(--working); border: 1px solid #bfe0cc; box-sizing: border-box; }
+  .tl-lunch { position: absolute; top: 0; height: 100%; background: var(--bg); border-left: 1px solid var(--border); border-right: 1px solid var(--border); box-sizing: border-box; }
+  .tl-showroom { position: absolute; bottom: 0; height: 45%; background: var(--showroom); border: 1px solid var(--showroom-text); border-radius: 3px; box-sizing: border-box; }
+  .tl-meeting { position: absolute; top: -6px; height: 6px; min-width: 3px; background: var(--meeting-text); border-radius: 2px; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(20,18,15,0.45);
+    display: flex; align-items: center; justify-content: center; z-index: 50;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: #fff; border-radius: 10px; padding: 20px; width: 460px; max-width: 92vw;
+    max-height: 88vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 16px; margin-bottom: 2px; }
+  .modal .modal-sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  .field-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .field { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 110px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .field input, .field select, .field textarea { width: 100%; }
+  .checkbox-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .meeting-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .meeting-row input[type="time"] { width: 90px; }
+  .meeting-row input[type="text"] { flex: 1; }
+  .modal-actions { display: flex; justify-content: space-between; margin-top: 16px; gap: 8px; }
+  .modal-actions .right { display: flex; gap: 8px; }
+
+  .week-notes { width: 100%; min-height: 50px; resize: vertical; }
+
+  footer.hint { margin-top: 14px; font-size: 11.5px; color: var(--muted); }
+
+  @media print {
+    header, nav.tabs, .toolbar, .clock-strip, .panel, footer.hint { display: none !important; }
+    .grid-scroll { border: none; }
+    table.rota .daycell:hover { outline: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div>
+      <h1>Customer Service Rota</h1>
+      <div class="subtitle">The Wool Room — UK Office · UK Showroom · US Office</div>
+    </div>
+    <div class="header-actions">
+      <button id="btnPrint">🖨 Print</button>
+      <button id="btnExport">⬇ Export</button>
+      <button id="btnImport">⬆ Import</button>
+      <input type="file" id="fileImport" accept="application/json" style="display:none" />
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn" data-tab="rota">Weekly Rota</button>
+    <button class="tab-btn" data-tab="patterns">Shift Patterns</button>
+    <button class="tab-btn" data-tab="holidays">Staff Holidays</button>
+    <button class="tab-btn" data-tab="calendar">Calendar</button>
+    <button class="tab-btn" data-tab="timeline">Timeline</button>
+    <button class="tab-btn" data-tab="team">Team &amp; Bank Holidays</button>
+  </nav>
+
+  <!-- ===================== ROTA TAB ===================== -->
+  <section class="tab-page" id="tab-rota">
+    <div class="toolbar">
+      <div class="week-nav">
+        <button id="btnPrevWeek">← Prev</button>
+        <span class="range" id="weekRange">–</span>
+        <button id="btnNextWeek">Next →</button>
+        <button id="btnToday" class="small">This week</button>
+      </div>
+      <div class="right-actions">
+        <button id="btnAutoAssign" class="primary small">🪄 Auto-assign week</button>
+        <button id="btnResetWeek" class="danger small">Reset week to defaults</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="week-nav">
+        <span style="font-weight:600;">Plan ahead:</span>
+        <input type="number" id="planAheadWeeks" min="1" max="26" value="4" style="width:56px;" />
+        <span class="muted" style="font-size:12px;">week(s) from next Monday</span>
+      </div>
+      <div class="right-actions">
+        <button id="btnPlanAhead" class="primary small">📅 Plan ahead</button>
+      </div>
+    </div>
+    <div class="hint" style="margin:-8px 0 14px 2px;">Auto-assigns every week in the range from your Shift Patterns, skipping any days already booked as Holiday. Run this monthly (or whenever patterns/team change) so Chlo doesn't have to open each week one by one.</div>
+
+    <div class="clock-strip">
+      <div class="clock">🇬🇧 UK time: <b id="clockUK">--:--</b></div>
+      <div class="clock">🇺🇸 US (Charlotte, NC) time: <b id="clockUS">--:--</b></div>
+      <div class="muted">Use this to judge live overlap between offices when scheduling meetings.</div>
+    </div>
+
+    <div id="banners"></div>
+
+    <div class="grid-scroll">
+      <table class="rota" id="rotaTable"></table>
+    </div>
+
+    <div class="panel">
+      <h2>Notes for this week</h2>
+      <textarea class="week-notes" id="weekNotes" placeholder="e.g. cover arrangements, one-off changes, reminders..."></textarea>
+    </div>
+  </section>
+
+  <!-- ===================== SHIFT PATTERNS TAB ===================== -->
+  <section class="tab-page hidden" id="tab-patterns">
+    <div class="panel">
+      <h2>Shift patterns</h2>
+      <div class="hint">Define each desk shift (office, hours, lunch) and how many people you need on it, per day of the week. Go to <b>Weekly Rota</b> and click <b>Auto-assign week</b> to fill the rota from these patterns — it rotates who gets each shift fairly and skips anyone already marked Holiday/Off. <b>Row order is priority</b> — if there aren't enough people on a day, patterns higher up get filled first. Use ↑/↓ to reorder.</div>
+      <div class="grid-scroll">
+        <table class="patterns-table" id="patternsTable">
+          <thead>
+            <tr>
+              <th>Priority</th><th>Name</th><th>Office</th><th>Start</th><th>End</th><th>Lunch start</th><th>Lunch end</th>
+              <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="patternsTableBody"></tbody>
+        </table>
+      </div>
+      <button id="btnAddPattern" class="small">+ Add shift pattern</button>
+
+      <h2 style="margin-top:18px;">Showroom coverage (UK)</h2>
+      <div class="hint">How many people need to be covering the UK Showroom each half of the day. This is assigned separately from desk shifts, since it's usually a half-day duty layered on top of someone's normal working day — Auto-assign can pick the same person for both halves, or split AM/PM between two people.</div>
+      <div class="grid-scroll">
+        <table class="patterns-table" id="showroomReqTable">
+          <thead><tr><th></th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+          <tbody id="showroomReqBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STAFF HOLIDAYS TAB ===================== -->
+  <section class="tab-page hidden" id="tab-holidays">
+    <div class="panel">
+      <h2>Booked holiday</h2>
+      <div class="hint">Booking here automatically marks those weekdays as Holiday on the Weekly Rota (creating the week if it doesn't exist yet). Weekends in the range are skipped.</div>
+      <div class="holiday-list" id="holidayEntriesList"></div>
+      <div class="field-row">
+        <div class="field"><label>Person</label><select id="newLeavePerson"></select></div>
+        <div class="field"><label>Start date</label><input type="date" id="newLeaveStart" /></div>
+        <div class="field"><label>End date</label><input type="date" id="newLeaveEnd" /></div>
+        <div class="field"><label>Note</label><input type="text" id="newLeaveNote" placeholder="optional" /></div>
+        <div class="field" style="max-width:110px; justify-content:flex-end;"><button id="btnAddLeave" class="small primary">+ Book</button></div>
+      </div>
+
+      <div class="hint" style="margin-top:14px;">Once holiday is booked, fill in the rest of those weeks (desk shifts + Showroom) from your Shift Patterns and see if anything's short-staffed.</div>
+      <button id="btnAutoFillHolidayWeeks" class="primary small">🪄 Auto-fill weeks with booked holiday</button>
+    </div>
+  </section>
+
+  <!-- ===================== CALENDAR TAB ===================== -->
+  <section class="tab-page hidden" id="tab-calendar">
+    <div class="panel">
+      <div class="cal-nav">
+        <button id="btnPrevMonth">← Prev</button>
+        <span id="calMonthLabel">–</span>
+        <button id="btnNextMonth">Next →</button>
+        <button id="btnCalToday" class="small">This month</button>
+      </div>
+      <div class="hint">Click any day to jump to that week in the Weekly Rota. Days shown in grey haven't been opened/planned yet.</div>
+      <table class="cal" id="calTable"></table>
+    </div>
+  </section>
+
+  <!-- ===================== TIMELINE (GANTT) TAB ===================== -->
+  <section class="tab-page hidden" id="tab-timeline">
+    <div class="panel">
+      <h2>Timeline</h2>
+      <div class="hint">Everyone's hours for one day, plotted on a single UK-time axis so you can see overlaps between UK and US, and around Showroom/meeting slots. Uses the week currently selected on <b>Weekly Rota</b> — switch weeks there, then come back here.</div>
+      <div id="timelineDateLabel" class="timeline-date-label"></div>
+      <div class="timeline-daypicker" id="timelineDayPicker">
+        <button type="button" class="timeline-day-btn" data-day="Mon">Mon</button>
+        <button type="button" class="timeline-day-btn" data-day="Tue">Tue</button>
+        <button type="button" class="timeline-day-btn" data-day="Wed">Wed</button>
+        <button type="button" class="timeline-day-btn" data-day="Thu">Thu</button>
+        <button type="button" class="timeline-day-btn" data-day="Fri">Fri</button>
+        <button type="button" class="timeline-day-btn" data-day="Sat">Sat</button>
+        <button type="button" class="timeline-day-btn" data-day="Sun">Sun</button>
+      </div>
+      <div class="timeline-legend">
+        <span><i class="tl-swatch" style="background:var(--working);"></i>Working</span>
+        <span><i class="tl-swatch" style="background:var(--bg); border:1px solid var(--border);"></i>Lunch</span>
+        <span><i class="tl-swatch" style="background:var(--showroom); border:1px solid var(--showroom-text);"></i>Showroom</span>
+        <span><i class="tl-swatch" style="background:var(--meeting-text);"></i>Meeting</span>
+      </div>
+      <div class="timeline-scroll">
+        <div id="timelineChart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TEAM & BANK HOLIDAYS TAB ===================== -->
+  <section class="tab-page hidden" id="tab-team">
+    <div class="panel">
+      <h2>Team defaults</h2>
+      <table class="team-table" id="teamTable">
+        <thead>
+          <tr><th>Name</th><th>Office</th><th>Role</th><th>Default start</th><th>Default end</th><th>Lunch (mins)</th><th></th></tr>
+        </thead>
+        <tbody id="teamTableBody"></tbody>
+      </table>
+      <button id="btnAddPerson" class="small">+ Add team member</button>
+
+      <h2 style="margin-top:18px;">Bank holidays</h2>
+      <div class="hint">Built-in UK &amp; US 2026 holidays shown below. Add your own for other years or company closures.</div>
+      <div class="holiday-list" id="holidayList"></div>
+      <div class="field-row">
+        <div class="field"><label>Date</label><input type="date" id="newHolDate" /></div>
+        <div class="field"><label>Name</label><input type="text" id="newHolName" placeholder="e.g. Office closure" /></div>
+        <div class="field" style="max-width:110px;"><label>Region</label>
+          <select id="newHolRegion"><option value="UK">UK</option><option value="US">US</option><option value="Both">Both</option></select>
+        </div>
+        <div class="field" style="max-width:110px; justify-content:flex-end;"><button id="btnAddHoliday" class="small">+ Add</button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="hint">Data autosaves in this browser. Use Export regularly to back up a copy (JSON file) — Import will restore from a backup.</footer>
+</div>
+
+<div class="modal-overlay hidden" id="cellModalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">Person — Day</h3>
+    <div class="modal-sub" id="modalSub"></div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Status</label>
+        <select id="fStatus">
+          <option value="working">Working</option>
+          <option value="holiday">Holiday</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="workingFields">
+      <div class="field-row">
+        <div class="field"><label>Start</label><input type="time" id="fStart" /></div>
+        <div class="field"><label>End</label><input type="time" id="fEnd" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Lunch start</label><input type="time" id="fLunchStart" /></div>
+        <div class="field"><label>Lunch end</label><input type="time" id="fLunchEnd" /></div>
+      </div>
+      <div class="field" id="showroomRow" style="margin-bottom:10px;">
+        <label for="fShowroom">UK Showroom duty this day</label>
+        <select id="fShowroom">
+          <option value="">Not covering Showroom</option>
+          <option value="AM">Morning (AM)</option>
+          <option value="PM">Afternoon (PM)</option>
+          <option value="FULL">All day</option>
+        </select>
+      </div>
+
+      <label style="font-size:12px; font-weight:600; color:var(--muted);">Meetings / blocked time</label>
+      <div id="meetingsList" style="margin:6px 0;"></div>
+      <button id="btnAddMeeting" class="small">+ Add meeting</button>
+    </div>
+
+    <div class="field" style="margin-top:12px;">
+      <label>Note</label>
+      <input type="text" id="fNote" placeholder="e.g. half day AM, WFH, dentist 2-3pm" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="danger" id="btnCancelCell">Cancel</button>
+      <div class="right">
+        <button class="primary" id="btnSaveCell">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DAY_NAMES = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  var STORAGE_KEY = "csRotaState_v1";
+
+  var BUILTIN_HOLIDAYS = [
+    {date:"2026-01-01", name:"New Year's Day", region:"Both"},
+    {date:"2026-01-19", name:"Martin Luther King Jr. Day", region:"US"},
+    {date:"2026-02-16", name:"Presidents' Day (Washington's Birthday)", region:"US"},
+    {date:"2026-04-03", name:"Good Friday", region:"UK"},
+    {date:"2026-04-06", name:"Easter Monday", region:"UK"},
+    {date:"2026-05-04", name:"Early May Bank Holiday", region:"UK"},
+    {date:"2026-05-25", name:"Spring Bank Holiday", region:"UK"},
+    {date:"2026-05-25", name:"Memorial Day", region:"US"},
+    {date:"2026-06-19", name:"Juneteenth", region:"US"},
+    {date:"2026-07-03", name:"Independence Day (observed)", region:"US"},
+    {date:"2026-08-31", name:"Summer Bank Holiday", region:"UK"},
+    {date:"2026-09-07", name:"Labor Day", region:"US"},
+    {date:"2026-10-12", name:"Columbus Day", region:"US"},
+    {date:"2026-11-11", name:"Veterans Day", region:"US"},
+    {date:"2026-11-26", name:"Thanksgiving", region:"US"},
+    {date:"2026-12-25", name:"Christmas Day", region:"Both"},
+    {date:"2026-12-28", name:"Boxing Day (substitute)", region:"UK"}
+  ];
+
+  function genId(prefix){ return prefix + "_" + Math.random().toString(36).slice(2,10); }
+
+  function defaultTeam(){
+    return [
+      {id:genId("p"), name:"Olivia", office:"UK", role:"Agent",   start:"09:00", end:"17:30", lunchMins:60},
+      {id:genId("p"), name:"Chloe",  office:"UK", role:"Agent",   start:"09:00", end:"17:30", lunchMins:60},
+      {id:genId("p"), name:"Scott",  office:"UK", role:"Agent",   start:"09:00", end:"17:30", lunchMins:60},
+      {id:genId("p"), name:"Chlo",   office:"UK", role:"Manager", start:"09:00", end:"17:30", lunchMins:60},
+      {id:genId("p"), name:"Anthea", office:"US", role:"Agent",   start:"", end:"", lunchMins:60},
+      {id:genId("p"), name:"Eva",    office:"US", role:"Agent",   start:"", end:"", lunchMins:60}
+    ];
+  }
+
+  function defaultPatterns(){
+    var ukEarly = {Mon:1,Tue:1,Wed:1,Thu:1,Fri:1,Sat:0,Sun:0};
+    var ukStandard = {Mon:3,Tue:3,Wed:3,Thu:3,Fri:3,Sat:0,Sun:0};
+    var usFull = {Mon:2,Tue:2,Wed:2,Thu:2,Fri:2,Sat:0,Sun:0};
+    return [
+      {id:genId("sp"), name:"UK Early", office:"UK", start:"08:30", end:"16:30", lunchStart:"12:00", lunchEnd:"13:00", required: Object.assign({}, ukEarly)},
+      {id:genId("sp"), name:"UK Standard", office:"UK", start:"09:00", end:"17:30", lunchStart:"13:00", lunchEnd:"14:00", required: Object.assign({}, ukStandard)},
+      {id:genId("sp"), name:"US Standard", office:"US", start:"09:00", end:"17:30", lunchStart:"13:00", lunchEnd:"14:00", required: Object.assign({}, usFull)}
+    ];
+  }
+
+  function defaultShowroomRequired(){
+    return {Mon:{am:1,pm:1}, Tue:{am:1,pm:1}, Wed:{am:1,pm:1}, Thu:{am:1,pm:1}, Fri:{am:1,pm:1}, Sat:{am:0,pm:0}, Sun:{am:0,pm:0}};
+  }
+
+  function defaultState(){
+    return {
+      team: defaultTeam(),
+      customHolidays: [],
+      shiftPatterns: defaultPatterns(),
+      peopleHolidays: [],
+      assignmentCounts: {},
+      showroomRequired: defaultShowroomRequired(),
+      showroomCounts: {},
+      weeks: {}
+    };
+  }
+
+  var state = loadState();
+  var currentMonday = getMonday(new Date());
+  var currentCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  var timelineDay = DAY_NAMES[(new Date().getDay() + 6) % 7];
+
+  function migrateState(parsed){
+    if (!parsed.customHolidays) parsed.customHolidays = [];
+    if (!parsed.shiftPatterns) parsed.shiftPatterns = [];
+    if (!parsed.peopleHolidays) parsed.peopleHolidays = [];
+    if (!parsed.assignmentCounts) parsed.assignmentCounts = {};
+    if (!parsed.showroomCounts) parsed.showroomCounts = {};
+    parsed.team.forEach(function(p){ delete p.holidayAllowance; });
+
+    Object.keys(parsed.weeks || {}).forEach(function(wk){
+      var week = parsed.weeks[wk];
+      DAY_NAMES.forEach(function(dn){
+        var dayObj = week.days && week.days[dn];
+        if (!dayObj) return;
+        Object.keys(dayObj.entries || {}).forEach(function(pid){
+          var e = dayObj.entries[pid];
+          if (typeof e.showroom === "boolean") e.showroom = e.showroom ? "FULL" : "";
+          if (typeof e.patternId === "undefined") e.patternId = null;
+        });
+      });
+    });
+
+    if (!parsed.showroomRequired){
+      var showroomPatterns = parsed.shiftPatterns.filter(function(sp){ return sp.showroom; });
+      if (showroomPatterns.length){
+        var basis = showroomPatterns[0].required || {};
+        parsed.showroomRequired = {};
+        DAY_NAMES.forEach(function(dn){
+          var n = basis[dn] || 0;
+          parsed.showroomRequired[dn] = {am:n, pm:n};
+        });
+        // Showroom duty used to be its own headcount on top of desk coverage. Now it's layered
+        // on top of whoever's already working, so fold its old headcount into a remaining desk
+        // pattern for the same office to avoid silently under-staffing the desk.
+        showroomPatterns.forEach(function(sp){
+          var target = parsed.shiftPatterns.filter(function(x){ return !x.showroom && x.office === sp.office; })[0];
+          if (!target) return;
+          DAY_NAMES.forEach(function(dn){
+            target.required[dn] = (target.required[dn] || 0) + (sp.required[dn] || 0);
+          });
+        });
+      } else {
+        parsed.showroomRequired = defaultShowroomRequired();
+      }
+    }
+    parsed.shiftPatterns = parsed.shiftPatterns.filter(function(sp){ return !sp.showroom; });
+    parsed.shiftPatterns.forEach(function(sp){ delete sp.showroom; });
+    if (!parsed.shiftPatterns.length) parsed.shiftPatterns = defaultPatterns();
+
+    return parsed;
+  }
+
+  function loadState(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultState();
+      var parsed = JSON.parse(raw);
+      if (!parsed.team || !parsed.weeks) return defaultState();
+      return migrateState(parsed);
+    } catch(e){
+      console.warn("Failed to load saved rota, starting fresh.", e);
+      return defaultState();
+    }
+  }
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function fmtDate(d){
+    var y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
+    return y + "-" + m + "-" + day;
+  }
+
+  function getMonday(d){
+    var nd = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var day = nd.getDay();
+    var diff = (day === 0 ? -6 : 1 - day);
+    nd.setDate(nd.getDate() + diff);
+    return nd;
+  }
+
+  function weekDates(monday){
+    var out = [];
+    for (var i=0;i<7;i++){
+      var d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate()+i);
+      out.push(d);
+    }
+    return out;
+  }
+
+  function allHolidays(){
+    return BUILTIN_HOLIDAYS.concat(state.customHolidays);
+  }
+
+  function holidaysOnDate(dateStr){
+    return allHolidays().filter(function(h){ return h.date === dateStr; });
+  }
+
+  function personById(id){
+    for (var i=0;i<state.team.length;i++) if (state.team[i].id === id) return state.team[i];
+    return null;
+  }
+
+  function patternById(id){
+    for (var i=0;i<state.shiftPatterns.length;i++) if (state.shiftPatterns[i].id === id) return state.shiftPatterns[i];
+    return null;
+  }
+
+  function defaultEntryForPerson(person, dayIndex){
+    var isWeekend = dayIndex >= 5;
+    return {
+      status: isWeekend ? "off" : "working",
+      start: person.start || "",
+      end: person.end || "",
+      lunchStart: "",
+      lunchEnd: "",
+      showroom: "",
+      note: "",
+      meetings: [],
+      patternId: null
+    };
+  }
+
+  function ensureWeek(weekKey, regenerate){
+    if (!state.weeks[weekKey] || regenerate){
+      var days = {};
+      DAY_NAMES.forEach(function(dn, i){
+        var entries = {};
+        state.team.forEach(function(p){
+          entries[p.id] = defaultEntryForPerson(p, i);
+        });
+        days[dn] = { entries: entries };
+      });
+      state.weeks[weekKey] = { notes: (state.weeks[weekKey] ? state.weeks[weekKey].notes : ""), days: days };
+    } else {
+      DAY_NAMES.forEach(function(dn, i){
+        var dayObj = state.weeks[weekKey].days[dn];
+        if (!dayObj) { dayObj = {entries:{}}; state.weeks[weekKey].days[dn] = dayObj; }
+        state.team.forEach(function(p){
+          if (!dayObj.entries[p.id]) dayObj.entries[p.id] = defaultEntryForPerson(p, i);
+        });
+      });
+    }
+    return state.weeks[weekKey];
+  }
+
+  // ---------- Tabs ----------
+
+  function switchTab(tabId){
+    document.querySelectorAll(".tab-page").forEach(function(el){ el.classList.add("hidden"); });
+    document.getElementById("tab-" + tabId).classList.remove("hidden");
+    document.querySelectorAll(".tab-btn").forEach(function(btn){
+      btn.classList.toggle("active", btn.getAttribute("data-tab") === tabId);
+    });
+    if (tabId === "rota") renderAll();
+    if (tabId === "patterns") { renderPatternsTable(); renderShowroomReqTable(); }
+    if (tabId === "holidays") renderHolidaysPage();
+    if (tabId === "calendar") renderCalendarPage();
+    if (tabId === "timeline") renderTimelinePage();
+    if (tabId === "team") { renderTeamTable(); renderHolidayList(); }
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){ switchTab(btn.getAttribute("data-tab")); });
+  });
+
+  // ---------- Rendering: Rota ----------
+
+  function renderWeekRange(){
+    var dates = weekDates(currentMonday);
+    var start = dates[0], end = dates[6];
+    var opts = {day:"numeric", month:"short"};
+    var label = start.toLocaleDateString("en-GB", opts) + " – " + end.toLocaleDateString("en-GB", opts) + ", " + end.getFullYear();
+    document.getElementById("weekRange").textContent = label;
+  }
+
+  function renderClocks(){
+    var now = new Date();
+    var ukFmt = new Intl.DateTimeFormat("en-GB", {timeZone:"Europe/London", hour:"2-digit", minute:"2-digit"});
+    var usFmt = new Intl.DateTimeFormat("en-GB", {timeZone:"America/New_York", hour:"2-digit", minute:"2-digit"});
+    document.getElementById("clockUK").textContent = ukFmt.format(now);
+    document.getElementById("clockUS").textContent = usFmt.format(now);
+  }
+
+  function renderBanners(weekKey){
+    var dates = weekDates(currentMonday);
+    var banners = [];
+
+    var holItems = [];
+    dates.forEach(function(d, i){
+      var ds = fmtDate(d);
+      holidaysOnDate(ds).forEach(function(h){
+        holItems.push(DAY_NAMES[i] + " " + d.getDate() + "/" + (d.getMonth()+1) + " — " + h.name + " (" + h.region + ")");
+      });
+    });
+    if (holItems.length){
+      banners.push('<div class="banner holiday"><strong>Bank holiday(s) this week:</strong><ul>' +
+        holItems.map(function(t){ return "<li>"+t+"</li>"; }).join("") + "</ul></div>");
+    }
+
+    var week = state.weeks[weekKey];
+    var ukTeam = state.team.filter(function(p){ return p.office === "UK"; });
+    var coverageProblems = [];
+    DAY_NAMES.forEach(function(dn, i){
+      if (i >= 5) return;
+      var dayObj = week.days[dn];
+      var req = state.showroomRequired[dn] || {am:0, pm:0};
+      var amCovering = ukTeam.filter(function(p){
+        var e = dayObj.entries[p.id];
+        return e && e.status === "working" && (e.showroom === "AM" || e.showroom === "FULL");
+      });
+      var pmCovering = ukTeam.filter(function(p){
+        var e = dayObj.entries[p.id];
+        return e && e.status === "working" && (e.showroom === "PM" || e.showroom === "FULL");
+      });
+      if (amCovering.length < req.am) coverageProblems.push(dn + ": Showroom AM needs " + req.am + ", only " + amCovering.length + " assigned");
+      if (amCovering.length > req.am) coverageProblems.push(dn + ": Showroom AM has " + amCovering.length + " assigned, only " + req.am + " needed (over-booked)");
+      if (pmCovering.length < req.pm) coverageProblems.push(dn + ": Showroom PM needs " + req.pm + ", only " + pmCovering.length + " assigned");
+      if (pmCovering.length > req.pm) coverageProblems.push(dn + ": Showroom PM has " + pmCovering.length + " assigned, only " + req.pm + " needed (over-booked)");
+    });
+    if (coverageProblems.length){
+      banners.push('<div class="banner warn"><strong>Showroom coverage needs attention:</strong><ul>' +
+        coverageProblems.map(function(t){ return "<li>"+t+"</li>"; }).join("") + "</ul></div>");
+    } else {
+      banners.push('<div class="banner ok">✓ UK Showroom is covered every weekday this week.</div>');
+    }
+
+    document.getElementById("banners").innerHTML = banners.join("");
+  }
+
+  function summarizeEntry(entry, person, dateStr){
+    var html = "";
+    if (entry.status === "off"){
+      html += '<div class="cell-note" style="color:var(--muted); font-style:normal;">Off</div>';
+    } else if (entry.status === "holiday"){
+      html += '<div class="cell-note" style="color:var(--warn); font-style:normal; font-weight:600;">Holiday</div>';
+    } else {
+      if (entry.patternId){
+        var pat = patternById(entry.patternId);
+        if (pat) html += '<div class="cell-pattern">' + escapeHtml(pat.name) + "</div>";
+      }
+      var startEnd = (entry.start || "?") + "–" + (entry.end || "?");
+      html += '<div class="cell-times">' + startEnd + "</div>";
+      if (entry.lunchStart && entry.lunchEnd){
+        html += '<div class="cell-lunch">Lunch ' + entry.lunchStart + "–" + entry.lunchEnd + "</div>";
+      }
+      if (person.office === "UK" && entry.showroom){
+        var showroomLabel = entry.showroom === "FULL" ? "Showroom (all day)" : entry.showroom === "AM" ? "Showroom AM" : "Showroom PM";
+        html += '<span class="tag showroom">' + showroomLabel + "</span>";
+      }
+      (entry.meetings||[]).forEach(function(m){
+        html += '<span class="tag meeting">' + (m.start||"") + " " + (m.title||"Meeting") + "</span>";
+      });
+    }
+    if (entry.note){
+      html += '<div class="cell-note">' + escapeHtml(entry.note) + "</div>";
+    }
+    var hols = holidaysOnDate(dateStr).filter(function(h){ return h.region === "Both" || h.region === person.office; });
+    hols.forEach(function(h){
+      html += '<span class="tag bankhol">' + escapeHtml(h.name) + "</span>";
+    });
+    return html;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function renderGrid(weekKey){
+    var week = state.weeks[weekKey];
+    var dates = weekDates(currentMonday);
+    var table = document.getElementById("rotaTable");
+
+    var thead = "<thead><tr><th class=\"name-col\">Team</th>";
+    dates.forEach(function(d, i){
+      thead += "<th>" + DAY_NAMES[i] + "<span class=\"daynum\">" + d.getDate() + "/" + (d.getMonth()+1) + "</span></th>";
+    });
+    thead += "</tr></thead>";
+
+    var offices = ["UK", "US"];
+    var tbody = "<tbody>";
+    offices.forEach(function(office){
+      var members = state.team.filter(function(p){ return p.office === office; });
+      if (!members.length) return;
+      tbody += '<tr class="office-row"><td colspan="8">' + (office === "UK" ? "UK Office (incl. Showroom rotation)" : "US Office (Charlotte, NC)") + "</td></tr>";
+      members.forEach(function(p){
+        tbody += "<tr>";
+        tbody += '<td class="name-col">' + escapeHtml(p.name) + (p.role === "Manager" ? " <span style=\"font-weight:400;color:var(--muted);font-size:11px;\">(Manager)</span>" : "") + "</td>";
+        DAY_NAMES.forEach(function(dn, i){
+          var entry = week.days[dn].entries[p.id];
+          var dateStr = fmtDate(dates[i]);
+          var statusClass = "status-" + entry.status;
+          tbody += '<td class="daycell ' + statusClass + '" data-person="' + p.id + '" data-day="' + dn + '">' +
+            summarizeEntry(entry, p, dateStr) + "</td>";
+        });
+        tbody += "</tr>";
+      });
+
+      if (office === "UK"){
+        [["AM","Showroom (AM)"], ["PM","Showroom (PM)"]].forEach(function(slotDef){
+          var slot = slotDef[0], label = slotDef[1];
+          tbody += '<tr class="coverage-row"><td class="name-col">' + label + "</td>";
+          DAY_NAMES.forEach(function(dn, i){
+            if (i >= 5){ tbody += "<td>—</td>"; return; }
+            var dayObj = week.days[dn];
+            var req = (state.showroomRequired[dn] && state.showroomRequired[dn][slot.toLowerCase()]) || 0;
+            var covering = members.filter(function(p){
+              var e = dayObj.entries[p.id];
+              return e && e.status === "working" && (e.showroom === slot || e.showroom === "FULL");
+            });
+            if (req === 0){
+              tbody += "<td>—</td>";
+            } else if (covering.length === req){
+              tbody += '<td><span class="coverage-icon coverage-ok">✓ ' + covering.map(function(p){return escapeHtml(p.name);}).join(", ") + "</span></td>";
+            } else if (covering.length === 0){
+              tbody += '<td><span class="coverage-icon coverage-bad">⚠ none (need ' + req + ')</span></td>';
+            } else {
+              tbody += '<td><span class="coverage-icon coverage-bad">⚠ ' + covering.map(function(p){return escapeHtml(p.name);}).join(", ") + " (need " + req + ")</span></td>";
+            }
+          });
+          tbody += "</tr>";
+        });
+      }
+    });
+    tbody += "</tbody>";
+
+    table.innerHTML = thead + tbody;
+
+    table.querySelectorAll("td.daycell").forEach(function(td){
+      td.addEventListener("click", function(){
+        openCellModal(td.getAttribute("data-person"), td.getAttribute("data-day"));
+      });
+    });
+  }
+
+  function renderWeekNotes(weekKey){
+    document.getElementById("weekNotes").value = state.weeks[weekKey].notes || "";
+  }
+
+  function renderAll(){
+    var weekKey = fmtDate(currentMonday);
+    ensureWeek(weekKey, false);
+    renderWeekRange();
+    renderBanners(weekKey);
+    renderGrid(weekKey);
+    renderWeekNotes(weekKey);
+    saveState();
+  }
+
+  // ---------- Cell modal ----------
+
+  var modalCtx = { personId: null, day: null };
+
+  function openCellModal(personId, day){
+    var weekKey = fmtDate(currentMonday);
+    var entry = state.weeks[weekKey].days[day].entries[personId];
+    var person = personById(personId);
+    modalCtx = { personId: personId, day: day };
+
+    document.getElementById("modalTitle").textContent = person.name + " — " + day;
+    var dIndex = DAY_NAMES.indexOf(day);
+    var dateForDay = weekDates(currentMonday)[dIndex];
+    document.getElementById("modalSub").textContent = dateForDay.toLocaleDateString("en-GB", {weekday:"long", day:"numeric", month:"long"}) + " · " + person.office + " office";
+
+    document.getElementById("fStatus").value = entry.status;
+    document.getElementById("fStart").value = entry.start || "";
+    document.getElementById("fEnd").value = entry.end || "";
+    document.getElementById("fLunchStart").value = entry.lunchStart || "";
+    document.getElementById("fLunchEnd").value = entry.lunchEnd || "";
+    document.getElementById("fNote").value = entry.note || "";
+    document.getElementById("fShowroom").value = entry.showroom || "";
+    document.getElementById("showroomRow").style.display = person.office === "UK" ? "flex" : "none";
+
+    renderMeetingsList(entry.meetings || []);
+    toggleWorkingFields();
+
+    document.getElementById("cellModalOverlay").classList.remove("hidden");
+  }
+
+  function toggleWorkingFields(){
+    var isWorking = document.getElementById("fStatus").value === "working";
+    document.getElementById("workingFields").style.display = isWorking ? "block" : "none";
+  }
+
+  function renderMeetingsList(meetings){
+    var container = document.getElementById("meetingsList");
+    container.innerHTML = "";
+    meetings.forEach(function(m){
+      addMeetingRow(m.start, m.end, m.title);
+    });
+  }
+
+  function addMeetingRow(start, end, title){
+    var row = document.createElement("div");
+    row.className = "meeting-row";
+    row.innerHTML =
+      '<input type="time" class="m-start" value="' + (start||"") + '" />' +
+      '<input type="time" class="m-end" value="' + (end||"") + '" />' +
+      '<input type="text" class="m-title" placeholder="Meeting title" value="' + escapeHtml(title||"") + '" />' +
+      '<button type="button" class="small danger m-remove">✕</button>';
+    row.querySelector(".m-remove").addEventListener("click", function(){ row.remove(); });
+    document.getElementById("meetingsList").appendChild(row);
+  }
+
+  function collectMeetingsFromModal(){
+    var rows = document.querySelectorAll("#meetingsList .meeting-row");
+    var out = [];
+    rows.forEach(function(r){
+      var start = r.querySelector(".m-start").value;
+      var end = r.querySelector(".m-end").value;
+      var title = r.querySelector(".m-title").value.trim();
+      if (start || end || title) out.push({start:start, end:end, title:title || "Meeting"});
+    });
+    return out;
+  }
+
+  document.getElementById("fStatus").addEventListener("change", toggleWorkingFields);
+  document.getElementById("btnAddMeeting").addEventListener("click", function(){ addMeetingRow("","",""); });
+  document.getElementById("btnCancelCell").addEventListener("click", function(){
+    document.getElementById("cellModalOverlay").classList.add("hidden");
+  });
+
+  document.getElementById("btnSaveCell").addEventListener("click", function(){
+    var weekKey = fmtDate(currentMonday);
+    var entry = state.weeks[weekKey].days[modalCtx.day].entries[modalCtx.personId];
+    entry.status = document.getElementById("fStatus").value;
+    entry.start = document.getElementById("fStart").value;
+    entry.end = document.getElementById("fEnd").value;
+    entry.lunchStart = document.getElementById("fLunchStart").value;
+    entry.lunchEnd = document.getElementById("fLunchEnd").value;
+    entry.showroom = document.getElementById("fShowroom").value;
+    entry.note = document.getElementById("fNote").value.trim();
+    entry.meetings = collectMeetingsFromModal();
+    entry.patternId = null;
+    document.getElementById("cellModalOverlay").classList.add("hidden");
+    renderAll();
+  });
+
+  // ---------- Week navigation ----------
+
+  document.getElementById("btnPrevWeek").addEventListener("click", function(){
+    currentMonday.setDate(currentMonday.getDate() - 7);
+    renderAll();
+  });
+  document.getElementById("btnNextWeek").addEventListener("click", function(){
+    currentMonday.setDate(currentMonday.getDate() + 7);
+    renderAll();
+  });
+  document.getElementById("btnToday").addEventListener("click", function(){
+    currentMonday = getMonday(new Date());
+    renderAll();
+  });
+  document.getElementById("btnResetWeek").addEventListener("click", function(){
+    if (confirm("Reset this week's rota back to each person's default hours? This will overwrite any edits made for this week.")){
+      ensureWeek(fmtDate(currentMonday), true);
+      renderAll();
+    }
+  });
+
+  document.getElementById("weekNotes").addEventListener("input", function(){
+    state.weeks[fmtDate(currentMonday)].notes = this.value;
+    saveState();
+  });
+
+  // ---------- Auto-assign ----------
+
+  function runAutoAssign(weekKey){
+    var week = ensureWeek(weekKey, false);
+    var shortfalls = [];
+
+    function getCount(personId, patternId){
+      return (state.assignmentCounts[personId] && state.assignmentCounts[personId][patternId]) || 0;
+    }
+    function incCount(personId, patternId){
+      if (!state.assignmentCounts[personId]) state.assignmentCounts[personId] = {};
+      state.assignmentCounts[personId][patternId] = getCount(personId, patternId) + 1;
+    }
+    function getShowroomCount(personId, slot){
+      return (state.showroomCounts[personId] && state.showroomCounts[personId][slot]) || 0;
+    }
+    function incShowroomCount(personId, slot){
+      if (!state.showroomCounts[personId]) state.showroomCounts[personId] = {};
+      state.showroomCounts[personId][slot] = getShowroomCount(personId, slot) + 1;
+    }
+
+    DAY_NAMES.forEach(function(dn){
+      var dayObj = week.days[dn];
+      ["UK","US"].forEach(function(office){
+        var patternsForOffice = state.shiftPatterns.filter(function(sp){ return sp.office === office; });
+        var pool = state.team.filter(function(p){
+          if (p.office !== office) return false;
+          var e = dayObj.entries[p.id];
+          return e.status !== "holiday" && e.status !== "off";
+        });
+        var assignedToday = {};
+
+        patternsForOffice.forEach(function(pattern){
+          var need = (pattern.required && pattern.required[dn]) || 0;
+          if (need <= 0) return;
+          var available = pool.filter(function(p){ return !assignedToday[p.id]; });
+          available.sort(function(a,b){ return getCount(a.id, pattern.id) - getCount(b.id, pattern.id); });
+          var picked = available.slice(0, need);
+          picked.forEach(function(p){
+            var e = dayObj.entries[p.id];
+            e.status = "working";
+            e.start = pattern.start;
+            e.end = pattern.end;
+            e.lunchStart = pattern.lunchStart;
+            e.lunchEnd = pattern.lunchEnd;
+            e.showroom = "";
+            e.patternId = pattern.id;
+            assignedToday[p.id] = true;
+            incCount(p.id, pattern.id);
+          });
+          if (picked.length < need){
+            shortfalls.push(dn + ": \"" + pattern.name + "\" needs " + need + ", only " + picked.length + " available");
+          }
+        });
+
+        pool.filter(function(p){ return !assignedToday[p.id]; }).forEach(function(p){
+          var e = dayObj.entries[p.id];
+          e.status = "working";
+          e.start = e.start || p.start || "09:00";
+          e.end = e.end || p.end || "17:30";
+          e.showroom = "";
+          e.patternId = null;
+        });
+      });
+
+      // Showroom AM/PM duty is layered on top of whoever is already working in the UK that day.
+      var req = state.showroomRequired[dn] || {am:0, pm:0};
+      var ukWorking = state.team.filter(function(p){
+        return p.office === "UK" && dayObj.entries[p.id].status === "working";
+      });
+
+      var amPool = ukWorking.slice().sort(function(a,b){ return getShowroomCount(a.id,"am") - getShowroomCount(b.id,"am"); });
+      var amPicked = amPool.slice(0, req.am);
+      amPicked.forEach(function(p){ dayObj.entries[p.id].showroom = "AM"; incShowroomCount(p.id, "am"); });
+      if (amPicked.length < req.am){
+        shortfalls.push(dn + ": Showroom AM needs " + req.am + ", only " + amPicked.length + " available");
+      }
+
+      var amPickedIds = amPicked.map(function(p){ return p.id; });
+      var pmCandidates = ukWorking.filter(function(p){ return amPickedIds.indexOf(p.id) === -1; });
+      if (pmCandidates.length < req.pm) pmCandidates = ukWorking.slice();
+      pmCandidates = pmCandidates.slice().sort(function(a,b){ return getShowroomCount(a.id,"pm") - getShowroomCount(b.id,"pm"); });
+      var pmPicked = pmCandidates.slice(0, req.pm);
+      pmPicked.forEach(function(p){
+        var e = dayObj.entries[p.id];
+        e.showroom = (e.showroom === "AM") ? "FULL" : "PM";
+        incShowroomCount(p.id, "pm");
+      });
+      if (pmPicked.length < req.pm){
+        shortfalls.push(dn + ": Showroom PM needs " + req.pm + ", only " + pmPicked.length + " available");
+      }
+    });
+
+    saveState();
+    return shortfalls;
+  }
+
+  document.getElementById("btnAutoAssign").addEventListener("click", function(){
+    if (!confirm("Auto-assign shifts for this week from your Shift Patterns and Showroom coverage? This overwrites hours/showroom/pattern for every day that isn't already marked Holiday or Off.")) return;
+    var shortfalls = runAutoAssign(fmtDate(currentMonday));
+    renderAll();
+    if (shortfalls.length){
+      alert("Auto-assign complete, but some shifts are short-staffed:\n\n" + shortfalls.join("\n"));
+    } else {
+      alert("Auto-assign complete — all shift patterns fully staffed this week.");
+    }
+  });
+
+  function planAheadWeeks(numWeeks){
+    var thisMonday = getMonday(new Date());
+    var allShortfalls = [];
+    var weeksPlanned = [];
+    for (var i = 1; i <= numWeeks; i++){
+      var monday = new Date(thisMonday.getFullYear(), thisMonday.getMonth(), thisMonday.getDate() + i * 7);
+      var wk = fmtDate(monday);
+      var shortfalls = runAutoAssign(wk);
+      weeksPlanned.push(wk);
+      shortfalls.forEach(function(s){ allShortfalls.push(wk + " — " + s); });
+    }
+    return {weeksPlanned: weeksPlanned, shortfalls: allShortfalls};
+  }
+
+  document.getElementById("btnPlanAhead").addEventListener("click", function(){
+    var n = parseInt(document.getElementById("planAheadWeeks").value, 10) || 1;
+    n = Math.max(1, Math.min(26, n));
+    if (!confirm("Auto-assign the next " + n + " week" + (n === 1 ? "" : "s") + " (starting next Monday) from your Shift Patterns? This overwrites hours/showroom/pattern for every day in that range that isn't already marked Holiday or Off — any holidays already booked on Staff Holidays are left untouched.")) return;
+    var result = planAheadWeeks(n);
+    renderAll();
+    var first = result.weeksPlanned[0], last = result.weeksPlanned[result.weeksPlanned.length - 1];
+    var msg = "Planned " + result.weeksPlanned.length + " week" + (result.weeksPlanned.length === 1 ? "" : "s") + " ahead (" + first + " to " + last + ").";
+    if (result.shortfalls.length){
+      var shown = result.shortfalls.slice(0, 20);
+      msg += "\n\nShort-staffed:\n" + shown.join("\n");
+      if (result.shortfalls.length > shown.length) msg += "\n...and " + (result.shortfalls.length - shown.length) + " more.";
+    } else {
+      msg += " Fully staffed throughout.";
+    }
+    alert(msg);
+  });
+
+  // ---------- Shift Patterns tab ----------
+
+  function renderPatternsTable(){
+    var tbody = document.getElementById("patternsTableBody");
+    tbody.innerHTML = "";
+    state.shiftPatterns.forEach(function(sp, idx){
+      var tr = document.createElement("tr");
+      var dayInputs = DAY_NAMES.map(function(dn){
+        return '<td><input type="number" min="0" step="1" class="sp-req" data-day="' + dn + '" value="' + (sp.required[dn]||0) + '" /></td>';
+      }).join("");
+      tr.innerHTML =
+        '<td style="white-space:nowrap;">' +
+          '<button type="button" class="small sp-up" ' + (idx===0?"disabled":"") + ' title="Higher priority">↑</button> ' +
+          '<button type="button" class="small sp-down" ' + (idx===state.shiftPatterns.length-1?"disabled":"") + ' title="Lower priority">↓</button>' +
+        '</td>' +
+        '<td><input type="text" class="sp-name" value="' + escapeHtml(sp.name) + '" /></td>' +
+        '<td><select class="sp-office"><option value="UK"' + (sp.office==="UK"?" selected":"") + '>UK</option><option value="US"' + (sp.office==="US"?" selected":"") + '>US</option></select></td>' +
+        '<td><input type="time" class="sp-start" value="' + (sp.start||"") + '" /></td>' +
+        '<td><input type="time" class="sp-end" value="' + (sp.end||"") + '" /></td>' +
+        '<td><input type="time" class="sp-lunchstart" value="' + (sp.lunchStart||"") + '" /></td>' +
+        '<td><input type="time" class="sp-lunchend" value="' + (sp.lunchEnd||"") + '" /></td>' +
+        dayInputs +
+        '<td><button type="button" class="small danger sp-remove">✕</button></td>';
+
+      tr.querySelector(".sp-name").addEventListener("change", function(){ sp.name = this.value.trim() || sp.name; saveState(); });
+      tr.querySelector(".sp-office").addEventListener("change", function(){ sp.office = this.value; saveState(); });
+      tr.querySelector(".sp-start").addEventListener("change", function(){ sp.start = this.value; saveState(); });
+      tr.querySelector(".sp-end").addEventListener("change", function(){ sp.end = this.value; saveState(); });
+      tr.querySelector(".sp-lunchstart").addEventListener("change", function(){ sp.lunchStart = this.value; saveState(); });
+      tr.querySelector(".sp-lunchend").addEventListener("change", function(){ sp.lunchEnd = this.value; saveState(); });
+      tr.querySelectorAll(".sp-req").forEach(function(inp){
+        inp.addEventListener("change", function(){
+          sp.required[this.getAttribute("data-day")] = parseInt(this.value,10) || 0;
+          saveState();
+        });
+      });
+      tr.querySelector(".sp-remove").addEventListener("click", function(){
+        if (confirm('Remove shift pattern "' + sp.name + '"? Days already assigned to it will keep their times but lose the pattern label.')){
+          state.shiftPatterns = state.shiftPatterns.filter(function(x){ return x.id !== sp.id; });
+          saveState();
+          renderPatternsTable();
+        }
+      });
+      var upBtn = tr.querySelector(".sp-up");
+      if (upBtn) upBtn.addEventListener("click", function(){
+        if (idx === 0) return;
+        var arr = state.shiftPatterns;
+        arr[idx] = arr.splice(idx-1, 1, arr[idx])[0];
+        saveState();
+        renderPatternsTable();
+      });
+      var downBtn = tr.querySelector(".sp-down");
+      if (downBtn) downBtn.addEventListener("click", function(){
+        if (idx === state.shiftPatterns.length-1) return;
+        var arr = state.shiftPatterns;
+        arr[idx] = arr.splice(idx+1, 1, arr[idx])[0];
+        saveState();
+        renderPatternsTable();
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("btnAddPattern").addEventListener("click", function(){
+    state.shiftPatterns.push({
+      id: genId("sp"), name: "New shift", office: "UK", start: "09:00", end: "17:30",
+      lunchStart: "13:00", lunchEnd: "14:00",
+      required: {Mon:0,Tue:0,Wed:0,Thu:0,Fri:0,Sat:0,Sun:0}
+    });
+    saveState();
+    renderPatternsTable();
+  });
+
+  function renderShowroomReqTable(){
+    var tbody = document.getElementById("showroomReqBody");
+    var rows = [{key:"am", label:"Morning (AM) needed"}, {key:"pm", label:"Afternoon (PM) needed"}];
+    tbody.innerHTML = rows.map(function(r){
+      var cells = DAY_NAMES.map(function(dn){
+        var val = (state.showroomRequired[dn] && state.showroomRequired[dn][r.key]) || 0;
+        return '<td><input type="number" min="0" step="1" class="sr-req" data-day="' + dn + '" data-slot="' + r.key + '" value="' + val + '" /></td>';
+      }).join("");
+      return "<tr><td style=\"font-weight:600;\">" + r.label + "</td>" + cells + "</tr>";
+    }).join("");
+    tbody.querySelectorAll(".sr-req").forEach(function(inp){
+      inp.addEventListener("change", function(){
+        var dn = this.getAttribute("data-day"), slot = this.getAttribute("data-slot");
+        if (!state.showroomRequired[dn]) state.showroomRequired[dn] = {am:0, pm:0};
+        state.showroomRequired[dn][slot] = parseInt(this.value,10) || 0;
+        saveState();
+      });
+    });
+  }
+
+  // ---------- Staff Holidays tab ----------
+
+  function countWorkingDays(startStr, endStr){
+    var start = new Date(startStr + "T00:00:00");
+    var end = new Date(endStr + "T00:00:00");
+    var count = 0;
+    for (var d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
+      var dow = d.getDay();
+      if (dow !== 0 && dow !== 6) count++;
+    }
+    return count;
+  }
+
+  function applyHolidayEntryToWeeks(entry, revert){
+    var start = new Date(entry.start + "T00:00:00");
+    var end = new Date(entry.end + "T00:00:00");
+    var person = personById(entry.personId);
+    if (!person) return;
+    for (var d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
+      var dow = d.getDay();
+      if (dow === 0 || dow === 6) continue;
+      var dayIdx = (dow + 6) % 7;
+      var dayName = DAY_NAMES[dayIdx];
+      var monday = getMonday(d);
+      var wk = fmtDate(monday);
+      ensureWeek(wk, false);
+      if (revert){
+        state.weeks[wk].days[dayName].entries[entry.personId] = defaultEntryForPerson(person, dayIdx);
+      } else {
+        state.weeks[wk].days[dayName].entries[entry.personId] = {
+          status: "holiday", start: "", end: "", lunchStart: "", lunchEnd: "",
+          showroom: "", note: entry.note || "", meetings: [], patternId: null
+        };
+      }
+    }
+  }
+
+  function renderHolidaysPage(){
+    var personSelect = document.getElementById("newLeavePerson");
+    personSelect.innerHTML = state.team.map(function(p){ return '<option value="' + p.id + '">' + escapeHtml(p.name) + "</option>"; }).join("");
+
+    var list = document.getElementById("holidayEntriesList");
+    var sorted = state.peopleHolidays.slice().sort(function(a,b){ return a.start.localeCompare(b.start); });
+    if (!sorted.length){
+      list.innerHTML = '<div class="hint" style="margin:0;">No holiday booked yet.</div>';
+    } else {
+      list.innerHTML = sorted.map(function(h){
+        var p = personById(h.personId);
+        var days = countWorkingDays(h.start, h.end);
+        return '<div class="hrow"><span>' + escapeHtml(p ? p.name : "?") + " — " + h.start + " to " + h.end +
+          " (" + days + " working day" + (days===1?"":"s") + ")" + (h.note ? " — " + escapeHtml(h.note) : "") + "</span>" +
+          '<button type="button" class="small danger leave-remove" data-id="' + h.id + '">✕</button></div>';
+      }).join("");
+      list.querySelectorAll(".leave-remove").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          var id = btn.getAttribute("data-id");
+          var entry = state.peopleHolidays.find(function(h){ return h.id === id; });
+          if (!entry) return;
+          if (!confirm("Remove this booked holiday? Those days will reset to default hours on the rota.")) return;
+          applyHolidayEntryToWeeks(entry, true);
+          state.peopleHolidays = state.peopleHolidays.filter(function(h){ return h.id !== id; });
+          saveState();
+          renderHolidaysPage();
+        });
+      });
+    }
+  }
+
+  document.getElementById("btnAddLeave").addEventListener("click", function(){
+    var personId = document.getElementById("newLeavePerson").value;
+    var start = document.getElementById("newLeaveStart").value;
+    var end = document.getElementById("newLeaveEnd").value;
+    var note = document.getElementById("newLeaveNote").value.trim();
+    if (!personId || !start || !end){ alert("Please choose a person, start date and end date."); return; }
+    if (end < start){ alert("End date must be on or after the start date."); return; }
+    var entry = {id: genId("hol"), personId: personId, start: start, end: end, note: note};
+    state.peopleHolidays.push(entry);
+    applyHolidayEntryToWeeks(entry, false);
+    saveState();
+    document.getElementById("newLeaveStart").value = "";
+    document.getElementById("newLeaveEnd").value = "";
+    document.getElementById("newLeaveNote").value = "";
+    renderHolidaysPage();
+  });
+
+  function weeksWithBookedHoliday(){
+    var weekKeys = {};
+    state.peopleHolidays.forEach(function(h){
+      var start = new Date(h.start + "T00:00:00"), end = new Date(h.end + "T00:00:00");
+      for (var d = new Date(start); d <= end; d.setDate(d.getDate() + 1)){
+        weekKeys[fmtDate(getMonday(d))] = true;
+      }
+    });
+    return Object.keys(weekKeys).sort();
+  }
+
+  document.getElementById("btnAutoFillHolidayWeeks").addEventListener("click", function(){
+    var weeks = weeksWithBookedHoliday();
+    if (!weeks.length){ alert("No holiday booked yet — nothing to auto-fill."); return; }
+    if (!confirm("Auto-assign the " + weeks.length + " week(s) that contain booked holiday, using your Shift Patterns? This overwrites hours/showroom/pattern for every day in those weeks that isn't already marked Holiday or Off.")) return;
+    var allShortfalls = [];
+    weeks.forEach(function(wk){
+      runAutoAssign(wk).forEach(function(s){ allShortfalls.push(wk + " — " + s); });
+    });
+    renderAll();
+    var msg = "Auto-filled " + weeks.length + " week(s) containing booked holiday.";
+    if (allShortfalls.length){
+      var shown = allShortfalls.slice(0, 20);
+      msg += "\n\nIssues found:\n" + shown.join("\n");
+      if (allShortfalls.length > shown.length) msg += "\n...and " + (allShortfalls.length - shown.length) + " more.";
+    } else {
+      msg += " No staffing issues found.";
+    }
+    alert(msg);
+  });
+
+  // ---------- Calendar tab ----------
+
+  function renderCalendarPage(){
+    var label = currentCalendarMonth.toLocaleDateString("en-GB", {month:"long", year:"numeric"});
+    document.getElementById("calMonthLabel").textContent = label;
+
+    var firstOfMonth = currentCalendarMonth;
+    var gridStart = getMonday(firstOfMonth);
+    var table = document.getElementById("calTable");
+
+    var thead = "<thead><tr>" + DAY_NAMES.map(function(dn){ return "<th>" + dn + "</th>"; }).join("") + "</tr></thead>";
+    var tbody = "<tbody>";
+
+    for (var row = 0; row < 6; row++){
+      tbody += "<tr>";
+      for (var col = 0; col < 7; col++){
+        var d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + row*7 + col);
+        var inMonth = d.getMonth() === firstOfMonth.getMonth();
+        var dateStr = fmtDate(d);
+        var monday = getMonday(d);
+        var wk = fmtDate(monday);
+        var dayIdx = col;
+        var dayName = DAY_NAMES[dayIdx];
+        var planned = !!state.weeks[wk];
+
+        var cellClasses = ["cal-cell"];
+        if (!inMonth) cellClasses.push("other-month");
+        if (!planned) cellClasses.push("not-planned");
+
+        var inner = '<div class="cal-daynum">' + d.getDate() + "</div>";
+
+        holidaysOnDate(dateStr).forEach(function(h){
+          inner += '<span class="tag bankhol">' + escapeHtml(h.name) + "</span>";
+        });
+
+        if (planned){
+          var dayObj = state.weeks[wk].days[dayName];
+          var onHoliday = state.team.filter(function(p){
+            var e = dayObj.entries[p.id];
+            return e && e.status === "holiday";
+          });
+          onHoliday.forEach(function(p){
+            inner += '<span class="cal-person-off">' + escapeHtml(p.name) + " off</span>";
+          });
+
+          ["UK","US"].forEach(function(office){
+            var required = state.shiftPatterns
+              .filter(function(sp){ return sp.office === office; })
+              .reduce(function(sum, sp){ return sum + ((sp.required && sp.required[dayName]) || 0); }, 0);
+            if (required === 0) return;
+            var working = state.team.filter(function(p){
+              var e = dayObj.entries[p.id];
+              return p.office === office && e && e.status === "working";
+            }).length;
+            if (working < required){
+              inner += '<div class="cal-warn">⚠ ' + office + " " + working + "/" + required + "</div>";
+            }
+          });
+        }
+
+        tbody += '<td class="' + cellClasses.join(" ") + '" data-date="' + dateStr + '">' + inner + "</td>";
+      }
+      tbody += "</tr>";
+    }
+    tbody += "</tbody>";
+
+    table.innerHTML = thead + tbody;
+    table.querySelectorAll("td[data-date]").forEach(function(td){
+      td.addEventListener("click", function(){
+        var ds = td.getAttribute("data-date");
+        currentMonday = getMonday(new Date(ds + "T00:00:00"));
+        switchTab("rota");
+      });
+    });
+  }
+
+  document.getElementById("btnPrevMonth").addEventListener("click", function(){
+    currentCalendarMonth = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth()-1, 1);
+    renderCalendarPage();
+  });
+  document.getElementById("btnNextMonth").addEventListener("click", function(){
+    currentCalendarMonth = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth()+1, 1);
+    renderCalendarPage();
+  });
+  document.getElementById("btnCalToday").addEventListener("click", function(){
+    currentCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    renderCalendarPage();
+  });
+
+  // ---------- Timeline (Gantt) tab ----------
+
+  function officeTimeZone(office){
+    return office === "UK" ? "Europe/London" : "America/New_York";
+  }
+
+  function tzOffsetMinutes(date, timeZone){
+    var dtf = new Intl.DateTimeFormat("en-US", {
+      timeZone: timeZone, hourCycle: "h23",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    });
+    var parts = {};
+    dtf.formatToParts(date).forEach(function(p){ if (p.type !== "literal") parts[p.type] = p.value; });
+    var asUTC = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+    return (asUTC - date.getTime()) / 60000;
+  }
+
+  function minutesFromHHMM(hhmm){
+    if (!hhmm) return null;
+    var parts = hhmm.split(":");
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  }
+
+  function officeRawMinutesToUKMinutes(office, rawMinutes, refDate){
+    if (office === "UK" || rawMinutes === null) return rawMinutes;
+    var ukOffset = tzOffsetMinutes(refDate, "Europe/London");
+    var officeOffset = tzOffsetMinutes(refDate, officeTimeZone(office));
+    return rawMinutes + (ukOffset - officeOffset);
+  }
+
+  function officeHHMMToUKMinutes(office, hhmm, refDate){
+    return officeRawMinutesToUKMinutes(office, minutesFromHHMM(hhmm), refDate);
+  }
+
+  function renderTimelineRow(r, pct){
+    var p = r.person;
+    var left = pct(r.startMin), width = pct(r.endMin) - pct(r.startMin);
+    var html = '<div class="timeline-row"><div class="tl-name">' + escapeHtml(p.name) +
+      (p.role === "Manager" ? ' <span class="muted" style="font-weight:400;font-size:10px;">(Mgr)</span>' : "") + "</div>";
+    html += '<div class="tl-track">';
+    html += '<div class="tl-bar" style="left:' + left + '%; width:' + width + '%;" title="' +
+      escapeHtml(p.name) + ": " + r.entry.start + "–" + r.entry.end + '"></div>';
+    if (r.lunchStartMin !== null && r.lunchEndMin !== null){
+      var lLeft = pct(r.lunchStartMin), lWidth = pct(r.lunchEndMin) - pct(r.lunchStartMin);
+      html += '<div class="tl-lunch" style="left:' + lLeft + '%; width:' + lWidth + '%;" title="Lunch ' +
+        r.entry.lunchStart + "–" + r.entry.lunchEnd + '"></div>';
+    }
+    if (r.showroomSeg){
+      var sLeft = pct(r.showroomSeg.start), sWidth = pct(r.showroomSeg.end) - pct(r.showroomSeg.start);
+      html += '<div class="tl-showroom" style="left:' + sLeft + '%; width:' + sWidth + '%;" title="Showroom ' +
+        r.showroomSeg.label + '"></div>';
+    }
+    r.meetings.forEach(function(m){
+      var mLeft = pct(m.start), mWidth = Math.max(pct(m.end) - pct(m.start), 1);
+      html += '<div class="tl-meeting" style="left:' + mLeft + '%; width:' + mWidth + '%;" title="' +
+        escapeHtml(m.title || "Meeting") + '"></div>';
+    });
+    html += "</div></div>";
+    return html;
+  }
+
+  function renderTimelinePage(){
+    var weekKey = fmtDate(currentMonday);
+    ensureWeek(weekKey, false);
+    var dates = weekDates(currentMonday);
+    var dayIdx = DAY_NAMES.indexOf(timelineDay);
+    var dayDate = dates[dayIdx];
+    var refDate = new Date(Date.UTC(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), 12, 0, 0));
+    var dayObj = state.weeks[weekKey].days[timelineDay];
+
+    document.querySelectorAll(".timeline-day-btn").forEach(function(btn){
+      btn.classList.toggle("active", btn.getAttribute("data-day") === timelineDay);
+    });
+    document.getElementById("timelineDateLabel").textContent =
+      dayDate.toLocaleDateString("en-GB", {weekday: "long", day: "numeric", month: "long", year: "numeric"}) + " (times shown in UK time)";
+
+    var rows = [];
+    var offRows = [];
+    state.team.forEach(function(p){
+      var e = dayObj.entries[p.id];
+      if (!e || e.status !== "working" || !e.start || !e.end){
+        offRows.push({person: p, entry: e});
+        return;
+      }
+      var startMin = officeHHMMToUKMinutes(p.office, e.start, refDate);
+      var endMin = officeHHMMToUKMinutes(p.office, e.end, refDate);
+      var lunchStartMin = e.lunchStart ? officeHHMMToUKMinutes(p.office, e.lunchStart, refDate) : null;
+      var lunchEndMin = e.lunchEnd ? officeHHMMToUKMinutes(p.office, e.lunchEnd, refDate) : null;
+      var meetings = (e.meetings || []).map(function(m){
+        return {
+          start: officeHHMMToUKMinutes(p.office, m.start, refDate),
+          end: officeHHMMToUKMinutes(p.office, m.end, refDate),
+          title: m.title
+        };
+      }).filter(function(m){ return m.start !== null && m.end !== null; });
+
+      var showroomSeg = null;
+      if (p.office === "UK" && e.showroom){
+        var rawStart = minutesFromHHMM(e.start), rawEnd = minutesFromHHMM(e.end);
+        var rawLunchStart = e.lunchStart ? minutesFromHHMM(e.lunchStart) : null;
+        var rawLunchEnd = e.lunchEnd ? minutesFromHHMM(e.lunchEnd) : null;
+        var mid = (rawStart + rawEnd) / 2;
+        var segStartRaw, segEndRaw;
+        if (e.showroom === "AM"){ segStartRaw = rawStart; segEndRaw = rawLunchStart !== null ? rawLunchStart : mid; }
+        else if (e.showroom === "PM"){ segStartRaw = rawLunchEnd !== null ? rawLunchEnd : mid; segEndRaw = rawEnd; }
+        else { segStartRaw = rawStart; segEndRaw = rawEnd; }
+        showroomSeg = {
+          start: officeRawMinutesToUKMinutes(p.office, segStartRaw, refDate),
+          end: officeRawMinutesToUKMinutes(p.office, segEndRaw, refDate),
+          label: e.showroom
+        };
+      }
+
+      rows.push({person: p, entry: e, startMin: startMin, endMin: endMin, lunchStartMin: lunchStartMin, lunchEndMin: lunchEndMin, meetings: meetings, showroomSeg: showroomSeg});
+    });
+
+    var container = document.getElementById("timelineChart");
+    if (!rows.length){
+      container.innerHTML = '<div class="hint" style="margin:20px 0;">Nobody is scheduled to work this day.</div>';
+      return;
+    }
+
+    var minStart = Math.min.apply(null, rows.map(function(r){ return r.startMin; }));
+    var maxEnd = Math.max.apply(null, rows.map(function(r){ return r.endMin; }));
+    var axisStartHour = Math.max(0, Math.floor(minStart / 60) - 1);
+    var axisEndHour = Math.min(24, Math.ceil(maxEnd / 60) + 1);
+    var axisStartMin = axisStartHour * 60, axisEndMin = axisEndHour * 60;
+    var totalMin = axisEndMin - axisStartMin;
+
+    function pct(min){
+      var clamped = Math.max(axisStartMin, Math.min(axisEndMin, min));
+      return (clamped - axisStartMin) / totalMin * 100;
+    }
+
+    var rulerHtml = '<div class="timeline-ruler-row"><div class="tl-name-spacer"></div><div class="timeline-axis">';
+    for (var h = axisStartHour; h <= axisEndHour; h++){
+      rulerHtml += '<span class="hr-label" style="left:' + pct(h * 60) + '%;">' + String(h).padStart(2, "0") + ":00</span>";
+    }
+    rulerHtml += "</div></div>";
+
+    var bodyHtml = "";
+    ["UK", "US"].forEach(function(office){
+      var officeRows = rows.filter(function(r){ return r.person.office === office; });
+      var officeOffRows = offRows.filter(function(r){ return r.person.office === office; });
+      if (!officeRows.length && !officeOffRows.length) return;
+      bodyHtml += '<div class="timeline-office-header">' + (office === "UK" ? "UK Office" : "US Office (Charlotte, NC)") + "</div>";
+      officeRows.forEach(function(r){ bodyHtml += renderTimelineRow(r, pct); });
+      officeOffRows.forEach(function(r){
+        var label = (!r.entry || r.entry.status === "off") ? "Off" : (r.entry.status === "holiday" ? "Holiday" : "Not working");
+        bodyHtml += '<div class="timeline-row"><div class="tl-name">' + escapeHtml(r.person.name) +
+          '</div><div class="tl-track tl-track-empty"><span class="tl-offlabel">' + label + "</span></div></div>";
+      });
+    });
+
+    container.innerHTML = rulerHtml + '<div class="timeline-body">' + bodyHtml + "</div>";
+  }
+
+  document.querySelectorAll(".timeline-day-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      timelineDay = btn.getAttribute("data-day");
+      renderTimelinePage();
+    });
+  });
+
+  // ---------- Team & Bank Holidays tab ----------
+
+  function renderTeamTable(){
+    var tbody = document.getElementById("teamTableBody");
+    tbody.innerHTML = "";
+    state.team.forEach(function(p){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><input type="text" class="t-name" value="' + escapeHtml(p.name) + '" /></td>' +
+        '<td><select class="t-office"><option value="UK"' + (p.office==="UK"?" selected":"") + '>UK</option><option value="US"' + (p.office==="US"?" selected":"") + '>US</option></select></td>' +
+        '<td><select class="t-role"><option value="Agent"' + (p.role==="Agent"?" selected":"") + '>Agent</option><option value="Manager"' + (p.role==="Manager"?" selected":"") + '>Manager</option></select></td>' +
+        '<td><input type="time" class="t-start" value="' + (p.start||"") + '" /></td>' +
+        '<td><input type="time" class="t-end" value="' + (p.end||"") + '" /></td>' +
+        '<td><input type="number" min="0" step="5" class="t-lunch" value="' + p.lunchMins + '" /></td>' +
+        '<td><button type="button" class="small danger t-remove">Remove</button></td>';
+      tr.dataset.id = p.id;
+
+      tr.querySelector(".t-name").addEventListener("change", function(){ p.name = this.value.trim() || p.name; saveState(); renderAll(); });
+      tr.querySelector(".t-office").addEventListener("change", function(){ p.office = this.value; saveState(); renderAll(); });
+      tr.querySelector(".t-role").addEventListener("change", function(){ p.role = this.value; saveState(); renderAll(); });
+      tr.querySelector(".t-start").addEventListener("change", function(){ p.start = this.value; saveState(); });
+      tr.querySelector(".t-end").addEventListener("change", function(){ p.end = this.value; saveState(); });
+      tr.querySelector(".t-lunch").addEventListener("change", function(){ p.lunchMins = parseInt(this.value,10) || 0; saveState(); });
+      tr.querySelector(".t-remove").addEventListener("click", function(){
+        if (confirm("Remove " + p.name + " from the team? Existing weeks keep their history but they'll disappear from the grid.")){
+          state.team = state.team.filter(function(x){ return x.id !== p.id; });
+          saveState(); renderTeamTable(); renderAll();
+        }
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("btnAddPerson").addEventListener("click", function(){
+    state.team.push({id:genId("p"), name:"New person", office:"UK", role:"Agent", start:"09:00", end:"17:30", lunchMins:60});
+    saveState();
+    renderTeamTable();
+    renderAll();
+  });
+
+  function renderHolidayList(){
+    var box = document.getElementById("holidayList");
+    var all = allHolidays().slice().sort(function(a,b){ return a.date.localeCompare(b.date); });
+    box.innerHTML = all.map(function(h){
+      var isCustom = state.customHolidays.indexOf(h) !== -1;
+      return '<div class="hrow"><span>' + h.date + " — " + escapeHtml(h.name) + " (" + h.region + ")</span>" +
+        (isCustom ? '<button type="button" class="small danger hol-remove" data-date="'+h.date+'" data-name="'+escapeHtml(h.name)+'">✕</button>' : '<span class="muted" style="font-size:11px;">built-in</span>') +
+        "</div>";
+    }).join("");
+    box.querySelectorAll(".hol-remove").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var date = btn.getAttribute("data-date"), name = btn.getAttribute("data-name");
+        state.customHolidays = state.customHolidays.filter(function(h){ return !(h.date === date && h.name === name); });
+        saveState(); renderHolidayList(); renderAll();
+      });
+    });
+  }
+
+  document.getElementById("btnAddHoliday").addEventListener("click", function(){
+    var date = document.getElementById("newHolDate").value;
+    var name = document.getElementById("newHolName").value.trim();
+    var region = document.getElementById("newHolRegion").value;
+    if (!date || !name){ alert("Please enter both a date and a name."); return; }
+    state.customHolidays.push({date:date, name:name, region:region});
+    document.getElementById("newHolDate").value = "";
+    document.getElementById("newHolName").value = "";
+    saveState();
+    renderHolidayList();
+    renderAll();
+  });
+
+  // ---------- Export / Import / Print ----------
+
+  document.getElementById("btnExport").addEventListener("click", function(){
+    var blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "cs-rota-backup-" + fmtDate(new Date()) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("btnImport").addEventListener("click", function(){
+    document.getElementById("fileImport").click();
+  });
+  document.getElementById("fileImport").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try {
+        var parsed = JSON.parse(reader.result);
+        if (!parsed.team || !parsed.weeks) throw new Error("Not a valid rota backup file.");
+        if (!confirm("Import this backup? It will replace all current rota data in this browser.")) return;
+        state = migrateState(parsed);
+        saveState();
+        switchTab("rota");
+      } catch(err){
+        alert("Couldn't import that file: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+
+  document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
+
+  // ---------- Init ----------
+
+  setInterval(renderClocks, 1000);
+  renderClocks();
+  switchTab("rota");
+
+})();
+</script>
+</body>
+</html>
