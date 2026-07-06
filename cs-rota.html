@@ -21,6 +21,8 @@
     --off: #ececea;
     --showroom: #efe6f7;
     --showroom-text: #6a3f96;
+    --lunch: #fff3b0;
+    --lunch-text: #8a6d00;
     --meeting: #dce8f7;
     --meeting-text: #2d5a8f;
     --bankhol: #fdeccb;
@@ -160,7 +162,6 @@
   table.rota thead th .daynum { display: block; font-weight: 700; color: var(--text); font-size: 13px; }
   table.rota .name-col { width: 140px; font-weight: 600; background: #fbfaf8; position: sticky; left: 0; }
   table.rota .office-row td { background: #f1efe9; font-weight: 700; color: var(--accent-dark); padding: 6px 8px; }
-  table.rota .coverage-row td { background: #faf9f6; }
   table.rota .daycell { width: 130px; min-width: 130px; cursor: pointer; }
   table.rota .daycell:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
 
@@ -169,17 +170,13 @@
   .status-off { background: var(--off); color: var(--muted); }
 
   .cell-times { font-weight: 600; }
-  .cell-lunch { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
   .cell-note { font-style: italic; font-size: 11.5px; margin-top: 2px; color: #5a5449; }
   .cell-pattern { font-size: 10.5px; font-weight: 700; color: var(--pattern-text); text-transform: uppercase; letter-spacing: .02em; }
   .tag { display: inline-block; border-radius: 4px; padding: 1px 5px; font-size: 10.5px; font-weight: 600; margin-top: 3px; margin-right: 3px; }
   .tag.showroom { background: var(--showroom); color: var(--showroom-text); }
+  .tag.lunch { background: var(--lunch); color: var(--lunch-text); }
   .tag.meeting { background: var(--meeting); color: var(--meeting-text); }
   .tag.bankhol { background: var(--bankhol); color: var(--bankhol-text); }
-
-  .coverage-icon { font-size: 15px; }
-  .coverage-ok { color: var(--accent-dark); }
-  .coverage-bad { color: var(--warn); font-weight: 700; }
 
   .panel {
     background: var(--surface);
@@ -239,7 +236,7 @@
   .tl-track-empty { display: flex; align-items: center; padding-left: 8px; }
   .tl-offlabel { font-size: 12px; color: var(--muted); }
   .tl-bar { position: absolute; top: 0; height: 100%; border-radius: 4px; background: var(--working); border: 1px solid #bfe0cc; box-sizing: border-box; }
-  .tl-lunch { position: absolute; top: 0; height: 100%; background: var(--bg); border-left: 1px solid var(--border); border-right: 1px solid var(--border); box-sizing: border-box; }
+  .tl-lunch { position: absolute; top: 0; height: 100%; background: var(--lunch); border-left: 1px solid var(--lunch-text); border-right: 1px solid var(--lunch-text); box-sizing: border-box; }
   .tl-showroom { position: absolute; bottom: 0; height: 45%; background: var(--showroom); border: 1px solid var(--showroom-text); border-radius: 3px; box-sizing: border-box; }
   .tl-meeting { position: absolute; top: -6px; height: 6px; min-width: 3px; background: var(--meeting-text); border-radius: 2px; }
 
@@ -288,7 +285,6 @@
       <div class="subtitle">The Wool Room — UK Office · UK Showroom · US Office</div>
     </div>
     <div class="header-actions">
-      <button id="btnSaveNow" class="primary">💾 Save</button>
       <button id="btnPrint">🖨 Print</button>
       <button id="btnExport">⬇ Export</button>
       <button id="btnImport">⬆ Import</button>
@@ -300,10 +296,10 @@
   <nav class="tabs">
     <button class="tab-btn" data-tab="rota">Weekly Rota</button>
     <button class="tab-btn" data-tab="patterns">Shift Patterns</button>
-    <button class="tab-btn" data-tab="holidays">Staff Holidays</button>
+    <button class="tab-btn" data-tab="rules">Assignment Rules</button>
     <button class="tab-btn" data-tab="calendar">Calendar</button>
     <button class="tab-btn" data-tab="timeline">Timeline</button>
-    <button class="tab-btn" data-tab="team">Team &amp; Bank Holidays</button>
+    <button class="tab-btn" data-tab="team">Team &amp; Holidays</button>
   </nav>
 
   <!-- ===================== ROTA TAB ===================== -->
@@ -355,7 +351,7 @@
   <section class="tab-page hidden" id="tab-patterns">
     <div class="panel">
       <h2>Shift patterns</h2>
-      <div class="hint">Define each desk shift (office, hours, lunch) and how many people you need on it, per day of the week. Go to <b>Weekly Rota</b> and click <b>Auto-assign week</b> to fill the rota from these patterns — it rotates who gets each shift fairly and skips anyone already marked Holiday/Off. <b>Row order is priority</b> — if there aren't enough people on a day, patterns higher up get filled first. Use ↑/↓ to reorder.</div>
+      <div class="hint">Define each desk shift (office, hours, lunch) and how many people you need on it, per day of the week. Go to <b>Weekly Rota</b> and click <b>Auto-assign week</b> to fill the rota from these patterns — it rotates who gets each shift fairly and skips anyone already marked Holiday/Off. <b>Row order is priority</b> — when people are scarce, patterns higher up get topped up first (see <b>Assignment Rules</b> for the minimum-coverage rule). Use ↑/↓ to reorder.</div>
       <div class="grid-scroll">
         <table class="patterns-table" id="patternsTable">
           <thead>
@@ -380,22 +376,23 @@
     </div>
   </section>
 
-  <!-- ===================== STAFF HOLIDAYS TAB ===================== -->
-  <section class="tab-page hidden" id="tab-holidays">
+  <!-- ===================== ASSIGNMENT RULES TAB ===================== -->
+  <section class="tab-page hidden" id="tab-rules">
     <div class="panel">
-      <h2>Booked holiday</h2>
-      <div class="hint">Booking here automatically marks those weekdays as Holiday on the Weekly Rota (creating the week if it doesn't exist yet). Weekends in the range are skipped.</div>
-      <div class="holiday-list" id="holidayEntriesList"></div>
-      <div class="field-row">
-        <div class="field"><label>Person</label><select id="newLeavePerson"></select></div>
-        <div class="field"><label>Start date</label><input type="date" id="newLeaveStart" /></div>
-        <div class="field"><label>End date</label><input type="date" id="newLeaveEnd" /></div>
-        <div class="field"><label>Note</label><input type="text" id="newLeaveNote" placeholder="optional" /></div>
-        <div class="field" style="max-width:110px; justify-content:flex-end;"><button id="btnAddLeave" class="small primary">+ Book</button></div>
+      <h2>Assignment rules</h2>
+      <div class="hint">These govern how <b>Auto-assign week</b> and <b>Plan ahead</b> fill the rota. More rules will be added here over time.</div>
+
+      <div class="checkbox-row" style="align-items:flex-start;">
+        <input type="checkbox" id="ruleGuaranteeMinOne" style="margin-top:3px;" />
+        <label for="ruleGuaranteeMinOne">
+          <b>Guarantee at least 1 person on every shift</b>
+          <div class="hint" style="margin:2px 0 0;">When people are scarce (e.g. holiday), every shift pattern with a requirement gets at least 1 person before any shift gets topped up further — instead of a high-priority shift using up everyone and leaving a lower one at zero.</div>
+        </label>
       </div>
 
-      <div class="hint" style="margin-top:14px;">Once holiday is booked, fill in the rest of those weeks (desk shifts + Showroom) from your Shift Patterns and see if anything's short-staffed.</div>
-      <button id="btnAutoFillHolidayWeeks" class="primary small">🪄 Auto-fill weeks with booked holiday</button>
+      <h2 style="margin-top:20px;">Other rules already in place</h2>
+      <div class="hint" style="margin-bottom:4px;"><b>Later shift gets the later lunch.</b> This isn't a toggle — it comes from each Shift Pattern having its own lunch time on the <b>Shift Patterns</b> tab. Give an earlier-starting pattern (e.g. UK Early) an earlier lunch than a later one (e.g. UK Standard) and Auto-assign will keep them staggered automatically.</div>
+      <div class="hint" style="margin:0;">More scheduling rules will appear here as they're added.</div>
     </div>
   </section>
 
@@ -430,7 +427,7 @@
       </div>
       <div class="timeline-legend">
         <span><i class="tl-swatch" style="background:var(--working);"></i>Working</span>
-        <span><i class="tl-swatch" style="background:var(--bg); border:1px solid var(--border);"></i>Lunch</span>
+        <span><i class="tl-swatch" style="background:var(--lunch); border:1px solid var(--lunch-text);"></i>Lunch</span>
         <span><i class="tl-swatch" style="background:var(--showroom); border:1px solid var(--showroom-text);"></i>Showroom</span>
         <span><i class="tl-swatch" style="background:var(--meeting-text);"></i>Meeting</span>
       </div>
@@ -451,6 +448,29 @@
         <tbody id="teamTableBody"></tbody>
       </table>
       <button id="btnAddPerson" class="small">+ Add team member</button>
+
+      <h2 style="margin-top:18px;">Staff holidays</h2>
+      <div class="hint">Booking here automatically marks those weekdays as Holiday on the Weekly Rota (creating the week if it doesn't exist yet). Weekends in the range are skipped.</div>
+      <div class="holiday-list" id="holidayEntriesList"></div>
+      <div class="field-row">
+        <div class="field"><label>Person</label><select id="newLeavePerson"></select></div>
+        <div class="field"><label>Start date</label><input type="date" id="newLeaveStart" /></div>
+        <div class="field"><label>End date</label><input type="date" id="newLeaveEnd" /></div>
+        <div class="field" style="max-width:150px;">
+          <label>Day portion</label>
+          <select id="newLeavePortion">
+            <option value="FULL">Full day</option>
+            <option value="AM">Morning (AM) only</option>
+            <option value="PM">Afternoon (PM) only</option>
+          </select>
+        </div>
+        <div class="field"><label>Note</label><input type="text" id="newLeaveNote" placeholder="optional" /></div>
+        <div class="field" style="max-width:110px; justify-content:flex-end;"><button id="btnAddLeave" class="small primary">+ Book</button></div>
+      </div>
+      <div class="hint" id="portionRangeHint" style="display:none; margin-top:-6px;">Day portion only applies to a single-day booking — this will be booked as a full day for each date in the range.</div>
+
+      <div class="hint" style="margin-top:14px;">Once holiday is booked, fill in the rest of those weeks (desk shifts + Showroom) from your Shift Patterns and see if anything's short-staffed.</div>
+      <button id="btnAutoFillHolidayWeeks" class="primary small">🪄 Auto-fill weeks with booked holiday</button>
 
       <h2 style="margin-top:18px;">Bank holidays</h2>
       <div class="hint">Built-in UK &amp; US 2026 holidays shown below. Add your own for other years or company closures.</div>
@@ -481,6 +501,14 @@
           <option value="working">Working</option>
           <option value="holiday">Holiday</option>
           <option value="off">Off</option>
+        </select>
+      </div>
+      <div class="field" id="holidayPortionRow">
+        <label>Holiday portion</label>
+        <select id="fHolidayPortion">
+          <option value="FULL">Full day</option>
+          <option value="AM">Morning (AM) only</option>
+          <option value="PM">Afternoon (PM) only</option>
         </select>
       </div>
     </div>
@@ -587,6 +615,7 @@
       assignmentCounts: {},
       showroomRequired: defaultShowroomRequired(),
       showroomCounts: {},
+      assignmentRules: {guaranteeMinOne: true},
       weeks: {}
     };
   }
@@ -602,6 +631,7 @@
     if (!parsed.peopleHolidays) parsed.peopleHolidays = [];
     if (!parsed.assignmentCounts) parsed.assignmentCounts = {};
     if (!parsed.showroomCounts) parsed.showroomCounts = {};
+    if (!parsed.assignmentRules) parsed.assignmentRules = {guaranteeMinOne: true};
     parsed.team.forEach(function(p){ delete p.holidayAllowance; });
 
     Object.keys(parsed.weeks || {}).forEach(function(wk){
@@ -613,6 +643,7 @@
           var e = dayObj.entries[pid];
           if (typeof e.showroom === "boolean") e.showroom = e.showroom ? "FULL" : "";
           if (typeof e.patternId === "undefined") e.patternId = null;
+          if (!e.holidayPortion) e.holidayPortion = "FULL";
         });
       });
     });
@@ -727,7 +758,8 @@
       showroom: "",
       note: "",
       meetings: [],
-      patternId: null
+      patternId: null,
+      holidayPortion: "FULL"
     };
   }
 
@@ -764,10 +796,10 @@
     });
     if (tabId === "rota") renderAll();
     if (tabId === "patterns") { renderPatternsTable(); renderShowroomReqTable(); }
-    if (tabId === "holidays") renderHolidaysPage();
+    if (tabId === "rules") renderRulesTab();
     if (tabId === "calendar") renderCalendarPage();
     if (tabId === "timeline") renderTimelinePage();
-    if (tabId === "team") { renderTeamTable(); renderHolidayList(); }
+    if (tabId === "team") { renderTeamTable(); renderHolidayList(); renderHolidaysPage(); }
   }
 
   document.querySelectorAll(".tab-btn").forEach(function(btn){
@@ -843,7 +875,8 @@
     if (entry.status === "off"){
       html += '<div class="cell-note" style="color:var(--muted); font-style:normal;">Off</div>';
     } else if (entry.status === "holiday"){
-      html += '<div class="cell-note" style="color:var(--warn); font-style:normal; font-weight:600;">Holiday</div>';
+      var holidayLabel = entry.holidayPortion === "AM" ? "Holiday (AM)" : entry.holidayPortion === "PM" ? "Holiday (PM)" : "Holiday";
+      html += '<div class="cell-note" style="color:var(--warn); font-style:normal; font-weight:600;">' + holidayLabel + "</div>";
     } else {
       if (entry.patternId){
         var pat = patternById(entry.patternId);
@@ -852,7 +885,7 @@
       var startEnd = (entry.start || "?") + "–" + (entry.end || "?");
       html += '<div class="cell-times">' + startEnd + "</div>";
       if (entry.lunchStart && entry.lunchEnd){
-        html += '<div class="cell-lunch">Lunch ' + entry.lunchStart + "–" + entry.lunchEnd + "</div>";
+        html += '<span class="tag lunch">Lunch ' + entry.lunchStart + "–" + entry.lunchEnd + "</span>";
       }
       if (person.office === "UK" && entry.showroom){
         var showroomLabel = entry.showroom === "FULL" ? "Showroom (all day)" : entry.showroom === "AM" ? "Showroom AM" : "Showroom PM";
@@ -907,32 +940,6 @@
         });
         tbody += "</tr>";
       });
-
-      if (office === "UK"){
-        [["AM","Showroom (AM)"], ["PM","Showroom (PM)"]].forEach(function(slotDef){
-          var slot = slotDef[0], label = slotDef[1];
-          tbody += '<tr class="coverage-row"><td class="name-col">' + label + "</td>";
-          DAY_NAMES.forEach(function(dn, i){
-            if (i >= 5){ tbody += "<td>—</td>"; return; }
-            var dayObj = week.days[dn];
-            var req = (state.showroomRequired[dn] && state.showroomRequired[dn][slot.toLowerCase()]) || 0;
-            var covering = members.filter(function(p){
-              var e = dayObj.entries[p.id];
-              return e && e.status === "working" && (e.showroom === slot || e.showroom === "FULL");
-            });
-            if (req === 0){
-              tbody += "<td>—</td>";
-            } else if (covering.length === req){
-              tbody += '<td><span class="coverage-icon coverage-ok">✓ ' + covering.map(function(p){return escapeHtml(p.name);}).join(", ") + "</span></td>";
-            } else if (covering.length === 0){
-              tbody += '<td><span class="coverage-icon coverage-bad">⚠ none (need ' + req + ')</span></td>';
-            } else {
-              tbody += '<td><span class="coverage-icon coverage-bad">⚠ ' + covering.map(function(p){return escapeHtml(p.name);}).join(", ") + " (need " + req + ")</span></td>";
-            }
-          });
-          tbody += "</tr>";
-        });
-      }
     });
     tbody += "</tbody>";
 
@@ -982,6 +989,7 @@
     document.getElementById("fNote").value = entry.note || "";
     document.getElementById("fShowroom").value = entry.showroom || "";
     document.getElementById("showroomRow").style.display = person.office === "UK" ? "flex" : "none";
+    document.getElementById("fHolidayPortion").value = entry.holidayPortion || "FULL";
 
     renderMeetingsList(entry.meetings || []);
     toggleWorkingFields();
@@ -990,8 +998,9 @@
   }
 
   function toggleWorkingFields(){
-    var isWorking = document.getElementById("fStatus").value === "working";
-    document.getElementById("workingFields").style.display = isWorking ? "block" : "none";
+    var status = document.getElementById("fStatus").value;
+    document.getElementById("workingFields").style.display = status === "working" ? "block" : "none";
+    document.getElementById("holidayPortionRow").style.display = status === "holiday" ? "flex" : "none";
   }
 
   function renderMeetingsList(meetings){
@@ -1044,6 +1053,7 @@
     entry.note = document.getElementById("fNote").value.trim();
     entry.meetings = collectMeetingsFromModal();
     entry.patternId = null;
+    entry.holidayPortion = entry.status === "holiday" ? document.getElementById("fHolidayPortion").value : "FULL";
     document.getElementById("cellModalOverlay").classList.add("hidden");
     renderAll();
   });
@@ -1105,27 +1115,48 @@
           return e.status !== "holiday" && e.status !== "off";
         });
         var assignedToday = {};
+        var patternCounts = {};
 
+        function assignPersonToPattern(p, pattern){
+          var e = dayObj.entries[p.id];
+          e.status = "working";
+          e.start = pattern.start;
+          e.end = pattern.end;
+          e.lunchStart = pattern.lunchStart;
+          e.lunchEnd = pattern.lunchEnd;
+          e.showroom = "";
+          e.patternId = pattern.id;
+          assignedToday[p.id] = true;
+          incCount(p.id, pattern.id);
+          patternCounts[pattern.id] = (patternCounts[pattern.id] || 0) + 1;
+        }
+
+        // Pass 1 (only when the "guarantee at least 1" rule is on): give every pattern that needs
+        // coverage at least 1 person first (priority order), so a low-priority shift never gets left
+        // at zero just because a higher one used everyone up.
+        if (state.assignmentRules.guaranteeMinOne){
+          patternsForOffice.forEach(function(pattern){
+            var need = (pattern.required && pattern.required[dn]) || 0;
+            if (need <= 0) return;
+            var available = pool.filter(function(p){ return !assignedToday[p.id]; });
+            available.sort(function(a,b){ return getCount(a.id, pattern.id) - getCount(b.id, pattern.id); });
+            if (available.length) assignPersonToPattern(available[0], pattern);
+          });
+        }
+
+        // Pass 2: top up each pattern toward its full required headcount, still in priority order.
         patternsForOffice.forEach(function(pattern){
           var need = (pattern.required && pattern.required[dn]) || 0;
           if (need <= 0) return;
-          var available = pool.filter(function(p){ return !assignedToday[p.id]; });
-          available.sort(function(a,b){ return getCount(a.id, pattern.id) - getCount(b.id, pattern.id); });
-          var picked = available.slice(0, need);
-          picked.forEach(function(p){
-            var e = dayObj.entries[p.id];
-            e.status = "working";
-            e.start = pattern.start;
-            e.end = pattern.end;
-            e.lunchStart = pattern.lunchStart;
-            e.lunchEnd = pattern.lunchEnd;
-            e.showroom = "";
-            e.patternId = pattern.id;
-            assignedToday[p.id] = true;
-            incCount(p.id, pattern.id);
-          });
-          if (picked.length < need){
-            shortfalls.push(dn + ": \"" + pattern.name + "\" needs " + need + ", only " + picked.length + " available");
+          var remaining = need - (patternCounts[pattern.id] || 0);
+          if (remaining > 0){
+            var available = pool.filter(function(p){ return !assignedToday[p.id]; });
+            available.sort(function(a,b){ return getCount(a.id, pattern.id) - getCount(b.id, pattern.id); });
+            available.slice(0, remaining).forEach(function(p){ assignPersonToPattern(p, pattern); });
+          }
+          var total = patternCounts[pattern.id] || 0;
+          if (total < need){
+            shortfalls.push(dn + ": \"" + pattern.name + "\" needs " + need + ", only " + total + " available");
           }
         });
 
@@ -1199,7 +1230,7 @@
   document.getElementById("btnPlanAhead").addEventListener("click", function(){
     var n = parseInt(document.getElementById("planAheadWeeks").value, 10) || 1;
     n = Math.max(1, Math.min(26, n));
-    if (!confirm("Auto-assign the next " + n + " week" + (n === 1 ? "" : "s") + " (starting next Monday) from your Shift Patterns? This overwrites hours/showroom/pattern for every day in that range that isn't already marked Holiday or Off — any holidays already booked on Staff Holidays are left untouched.")) return;
+    if (!confirm("Auto-assign the next " + n + " week" + (n === 1 ? "" : "s") + " (starting next Monday) from your Shift Patterns? This overwrites hours/showroom/pattern for every day in that range that isn't already marked Holiday or Off — any holidays already booked under Team & Holidays are left untouched.")) return;
     var result = planAheadWeeks(n);
     renderAll();
     var first = result.weeksPlanned[0], last = result.weeksPlanned[result.weeksPlanned.length - 1];
@@ -1308,7 +1339,18 @@
     });
   }
 
-  // ---------- Staff Holidays tab ----------
+  // ---------- Assignment Rules tab ----------
+
+  function renderRulesTab(){
+    document.getElementById("ruleGuaranteeMinOne").checked = !!state.assignmentRules.guaranteeMinOne;
+  }
+
+  document.getElementById("ruleGuaranteeMinOne").addEventListener("change", function(){
+    state.assignmentRules.guaranteeMinOne = this.checked;
+    saveState();
+  });
+
+  // ---------- Staff Holidays (part of Team & Holidays tab) ----------
 
   function countWorkingDays(startStr, endStr){
     var start = new Date(startStr + "T00:00:00");
@@ -1326,6 +1368,13 @@
     var end = new Date(entry.end + "T00:00:00");
     var person = personById(entry.personId);
     if (!person) return;
+    var spanDays = Math.round((end - start) / 86400000) + 1;
+    if (!(spanDays >= 1) || spanDays > 366){
+      console.warn("Skipped applying holiday entry with an implausible date range:", entry);
+      return;
+    }
+    var isSingleDay = entry.start === entry.end;
+    var portion = (isSingleDay && entry.portion) ? entry.portion : "FULL";
     for (var d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
       var dow = d.getDay();
       if (dow === 0 || dow === 6) continue;
@@ -1339,7 +1388,7 @@
       } else {
         state.weeks[wk].days[dayName].entries[entry.personId] = {
           status: "holiday", start: "", end: "", lunchStart: "", lunchEnd: "",
-          showroom: "", note: entry.note || "", meetings: [], patternId: null
+          showroom: "", note: entry.note || "", meetings: [], patternId: null, holidayPortion: portion
         };
       }
     }
@@ -1357,8 +1406,9 @@
       list.innerHTML = sorted.map(function(h){
         var p = personById(h.personId);
         var days = countWorkingDays(h.start, h.end);
+        var portionLabel = (h.start === h.end && h.portion && h.portion !== "FULL") ? (h.portion === "AM" ? ", morning only" : ", afternoon only") : "";
         return '<div class="hrow"><span>' + escapeHtml(p ? p.name : "?") + " — " + h.start + " to " + h.end +
-          " (" + days + " working day" + (days===1?"":"s") + ")" + (h.note ? " — " + escapeHtml(h.note) : "") + "</span>" +
+          " (" + days + " working day" + (days===1?"":"s") + portionLabel + ")" + (h.note ? " — " + escapeHtml(h.note) : "") + "</span>" +
           '<button type="button" class="small danger leave-remove" data-id="' + h.id + '">✕</button></div>';
       }).join("");
       list.querySelectorAll(".leave-remove").forEach(function(btn){
@@ -1383,15 +1433,42 @@
     var note = document.getElementById("newLeaveNote").value.trim();
     if (!personId || !start || !end){ alert("Please choose a person, start date and end date."); return; }
     if (end < start){ alert("End date must be on or after the start date."); return; }
-    var entry = {id: genId("hol"), personId: personId, start: start, end: end, note: note};
+    var startYear = parseInt(start.slice(0,4), 10), endYear = parseInt(end.slice(0,4), 10);
+    if (startYear < 2000 || startYear > 2100 || endYear < 2000 || endYear > 2100){
+      alert("One of those dates looks off (" + start + " to " + end + ") — please double-check the year and try again.");
+      return;
+    }
+    var daySpan = Math.round((new Date(end + "T00:00:00") - new Date(start + "T00:00:00")) / 86400000) + 1;
+    if (daySpan > 60){
+      alert("That's a " + daySpan + "-day range (" + start + " to " + end + ") — please double-check the dates. For anything longer than about 2 months, book it in smaller chunks.");
+      return;
+    }
+    var portion = document.getElementById("newLeavePortion").value;
+    var entry = {id: genId("hol"), personId: personId, start: start, end: end, note: note, portion: portion};
     state.peopleHolidays.push(entry);
     applyHolidayEntryToWeeks(entry, false);
     saveState();
     document.getElementById("newLeaveStart").value = "";
     document.getElementById("newLeaveEnd").value = "";
     document.getElementById("newLeaveNote").value = "";
+    document.getElementById("newLeavePortion").value = "FULL";
     renderHolidaysPage();
+    var bookedPerson = personById(personId);
+    var portionSuffix = portion === "AM" ? " (morning only)" : portion === "PM" ? " (afternoon only)" : "";
+    var rangeText = start === end ? start : start + " to " + end;
+    alert("Booked: " + (bookedPerson ? bookedPerson.name : "holiday") + " — " + rangeText + portionSuffix + ".");
   });
+
+  function updatePortionAvailability(){
+    var start = document.getElementById("newLeaveStart").value;
+    var end = document.getElementById("newLeaveEnd").value;
+    var isRange = start && end && start !== end;
+    document.getElementById("newLeavePortion").disabled = isRange;
+    if (isRange) document.getElementById("newLeavePortion").value = "FULL";
+    document.getElementById("portionRangeHint").style.display = isRange ? "block" : "none";
+  }
+  document.getElementById("newLeaveStart").addEventListener("change", updatePortionAvailability);
+  document.getElementById("newLeaveEnd").addEventListener("change", updatePortionAvailability);
 
   function weeksWithBookedHoliday(){
     var weekKeys = {};
@@ -1466,7 +1543,9 @@
             return e && e.status === "holiday";
           });
           onHoliday.forEach(function(p){
-            inner += '<span class="cal-person-off">' + escapeHtml(p.name) + " off</span>";
+            var e = dayObj.entries[p.id];
+            var portionSuffix = e.holidayPortion === "AM" ? " (AM)" : e.holidayPortion === "PM" ? " (PM)" : "";
+            inner += '<span class="cal-person-off">' + escapeHtml(p.name) + " off" + portionSuffix + "</span>";
           });
 
           ["UK","US"].forEach(function(office){
@@ -1662,7 +1741,9 @@
       bodyHtml += '<div class="timeline-office-header">' + (office === "UK" ? "UK Office" : "US Office (Charlotte, NC)") + "</div>";
       officeRows.forEach(function(r){ bodyHtml += renderTimelineRow(r, pct); });
       officeOffRows.forEach(function(r){
-        var label = (!r.entry || r.entry.status === "off") ? "Off" : (r.entry.status === "holiday" ? "Holiday" : "Not working");
+        var label = "Not working";
+        if (!r.entry || r.entry.status === "off") label = "Off";
+        else if (r.entry.status === "holiday") label = r.entry.holidayPortion === "AM" ? "Holiday (AM)" : r.entry.holidayPortion === "PM" ? "Holiday (PM)" : "Holiday";
         bodyHtml += '<div class="timeline-row"><div class="tl-name">' + escapeHtml(r.person.name) +
           '</div><div class="tl-track tl-track-empty"><span class="tl-offlabel">' + label + "</span></div></div>";
       });
@@ -1788,11 +1869,6 @@
   });
 
   document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
-
-  document.getElementById("btnSaveNow").addEventListener("click", function(){
-    saveState();
-    updateSaveIndicator(true);
-  });
 
   // ---------- Init ----------
 
