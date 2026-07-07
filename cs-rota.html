@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -203,43 +203,6 @@
   .holiday-list .hrow { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--border); }
   .holiday-list .hrow:last-child { border-bottom: none; }
 
-  .cal-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 600; }
-  table.cal { border-collapse: collapse; width: 100%; table-layout: fixed; }
-  table.cal th { padding: 6px; font-size: 12px; color: var(--muted); text-align: left; }
-  table.cal td {
-    border: 1px solid var(--border); vertical-align: top; height: 96px;
-    padding: 5px; font-size: 11.5px; cursor: pointer;
-  }
-  table.cal td:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
-  table.cal td.other-month { background: #f5f4f1; color: var(--muted); }
-  table.cal td.not-planned { background: #fcfcfb; }
-  .cal-daynum { font-weight: 700; font-size: 12.5px; margin-bottom: 3px; }
-  .cal-person-off { color: var(--warn); font-size: 10.5px; display: block; }
-  .cal-warn { color: var(--warn); font-size: 10.5px; font-weight: 700; }
-
-  .timeline-date-label { font-weight: 700; font-size: 14px; margin-bottom: 10px; }
-  .timeline-daypicker { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-  .timeline-day-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .timeline-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; font-size: 12px; color: var(--muted); }
-  .timeline-legend span { display: flex; align-items: center; gap: 6px; }
-  .tl-swatch { display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
-  .timeline-scroll { overflow-x: auto; }
-  #timelineChart { min-width: 720px; }
-  .timeline-ruler-row { display: flex; }
-  .tl-name-spacer { width: 150px; flex-shrink: 0; }
-  .timeline-axis { position: relative; flex: 1; height: 22px; border-bottom: 1px solid var(--border); }
-  .timeline-axis .hr-label { position: absolute; top: 0; font-size: 11px; color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
-  .timeline-office-header { font-weight: 700; color: var(--accent-dark); background: #f1efe9; padding: 5px 8px; margin-top: 8px; border-radius: 4px; font-size: 12.5px; }
-  .timeline-row { display: flex; align-items: center; min-height: 42px; border-bottom: 1px solid var(--border); }
-  .timeline-row .tl-name { width: 150px; flex-shrink: 0; font-weight: 600; font-size: 12.5px; padding-right: 8px; }
-  .timeline-row .tl-track { position: relative; flex: 1; height: 26px; background: #f5f4f1; border-radius: 4px; }
-  .tl-track-empty { display: flex; align-items: center; padding-left: 8px; }
-  .tl-offlabel { font-size: 12px; color: var(--muted); }
-  .tl-bar { position: absolute; top: 0; height: 100%; border-radius: 4px; background: var(--working); border: 1px solid #bfe0cc; box-sizing: border-box; }
-  .tl-lunch { position: absolute; top: 0; height: 100%; background: var(--lunch); border-left: 1px solid var(--lunch-text); border-right: 1px solid var(--lunch-text); box-sizing: border-box; }
-  .tl-showroom { position: absolute; bottom: 0; height: 45%; background: var(--showroom); border: 1px solid var(--showroom-text); border-radius: 3px; box-sizing: border-box; }
-  .tl-meeting { position: absolute; top: -6px; height: 6px; min-width: 3px; background: var(--meeting-text); border-radius: 2px; }
-
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(20,18,15,0.45);
     display: flex; align-items: center; justify-content: center; z-index: 50;
@@ -294,12 +257,8 @@
   <div id="saveIndicator" class="save-indicator"></div>
 
   <nav class="tabs">
-    <button class="tab-btn" data-tab="rota">Weekly Rota</button>
-    <button class="tab-btn" data-tab="patterns">Shift Patterns</button>
-    <button class="tab-btn" data-tab="rules">Assignment Rules</button>
-    <button class="tab-btn" data-tab="calendar">Calendar</button>
-    <button class="tab-btn" data-tab="timeline">Timeline</button>
-    <button class="tab-btn" data-tab="team">Team &amp; Holidays</button>
+    <button class="tab-btn" data-tab="rota">Rota</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
   </nav>
 
   <!-- ===================== ROTA TAB ===================== -->
@@ -317,18 +276,6 @@
       </div>
     </div>
 
-    <div class="toolbar">
-      <div class="week-nav">
-        <span style="font-weight:600;">Plan ahead:</span>
-        <input type="number" id="planAheadWeeks" min="1" max="26" value="4" style="width:56px;" />
-        <span class="muted" style="font-size:12px;">week(s) from next Monday</span>
-      </div>
-      <div class="right-actions">
-        <button id="btnPlanAhead" class="primary small">📅 Plan ahead</button>
-      </div>
-    </div>
-    <div class="hint" style="margin:-8px 0 14px 2px;">Auto-assigns every week in the range from your Shift Patterns, skipping any days already booked as Holiday. Run this monthly (or whenever patterns/team change) so Chlo doesn't have to open each week one by one.</div>
-
     <div class="clock-strip">
       <div class="clock">🇬🇧 UK time: <b id="clockUK">--:--</b></div>
       <div class="clock">🇺🇸 US (Charlotte, NC) time: <b id="clockUS">--:--</b></div>
@@ -342,16 +289,41 @@
     </div>
 
     <div class="panel">
+      <h2>Book holiday</h2>
+      <div class="hint">Booking here automatically marks those weekdays as Holiday on this rota (creating the week if it doesn't exist yet). Weekends in the range are skipped.</div>
+      <div class="holiday-list" id="holidayEntriesList"></div>
+      <div class="field-row">
+        <div class="field"><label>Person</label><select id="newLeavePerson"></select></div>
+        <div class="field"><label>Start date</label><input type="date" id="newLeaveStart" /></div>
+        <div class="field"><label>End date</label><input type="date" id="newLeaveEnd" /></div>
+        <div class="field" style="max-width:150px;">
+          <label>Day portion</label>
+          <select id="newLeavePortion">
+            <option value="FULL">Full day</option>
+            <option value="AM">Morning (AM) only</option>
+            <option value="PM">Afternoon (PM) only</option>
+          </select>
+        </div>
+        <div class="field"><label>Note</label><input type="text" id="newLeaveNote" placeholder="optional" /></div>
+        <div class="field" style="max-width:110px; justify-content:flex-end;"><button id="btnAddLeave" class="small primary">+ Book</button></div>
+      </div>
+      <div class="hint" id="portionRangeHint" style="display:none; margin-top:-6px;">Day portion only applies to a single-day booking — this will be booked as a full day for each date in the range.</div>
+
+      <div class="hint" style="margin-top:14px;">Once holiday is booked, fill in the rest of those weeks (desk shifts + Showroom) from your Shift Patterns and see if anything's short-staffed.</div>
+      <button id="btnAutoFillHolidayWeeks" class="primary small">🪄 Auto-fill weeks with booked holiday</button>
+    </div>
+
+    <div class="panel">
       <h2>Notes for this week</h2>
       <textarea class="week-notes" id="weekNotes" placeholder="e.g. cover arrangements, one-off changes, reminders..."></textarea>
     </div>
   </section>
 
-  <!-- ===================== SHIFT PATTERNS TAB ===================== -->
-  <section class="tab-page hidden" id="tab-patterns">
+  <!-- ===================== SETTINGS TAB ===================== -->
+  <section class="tab-page hidden" id="tab-settings">
     <div class="panel">
       <h2>Shift patterns</h2>
-      <div class="hint">Define each desk shift (office, hours, lunch) and how many people you need on it, per day of the week. Go to <b>Weekly Rota</b> and click <b>Auto-assign week</b> to fill the rota from these patterns — it rotates who gets each shift fairly and skips anyone already marked Holiday/Off. <b>Row order is priority</b> — when people are scarce, patterns higher up get topped up first (see <b>Assignment Rules</b> for the minimum-coverage rule). Use ↑/↓ to reorder.</div>
+      <div class="hint">Define each desk shift (office, hours, lunch) and how many people you need on it, per day of the week. Go to <b>Rota</b> and click <b>Auto-assign week</b> to fill the rota from these patterns — it rotates who gets each shift fairly and skips anyone already marked Holiday/Off. <b>Row order is priority</b> — when people are scarce, patterns higher up get topped up first (see <b>Assignment rules</b> below for the minimum-coverage rule). Use ↑/↓ to reorder.</div>
       <div class="grid-scroll">
         <table class="patterns-table" id="patternsTable">
           <thead>
@@ -374,13 +346,10 @@
         </table>
       </div>
     </div>
-  </section>
 
-  <!-- ===================== ASSIGNMENT RULES TAB ===================== -->
-  <section class="tab-page hidden" id="tab-rules">
     <div class="panel">
       <h2>Assignment rules</h2>
-      <div class="hint">These govern how <b>Auto-assign week</b> and <b>Plan ahead</b> fill the rota. More rules will be added here over time.</div>
+      <div class="hint">These govern how <b>Auto-assign week</b> fills the rota. More rules will be added here over time.</div>
 
       <div class="checkbox-row" style="align-items:flex-start;">
         <input type="checkbox" id="ruleGuaranteeMinOne" style="margin-top:3px;" />
@@ -394,51 +363,7 @@
       <div class="hint" style="margin-bottom:4px;"><b>Later shift gets the later lunch.</b> This isn't a toggle — it comes from each Shift Pattern having its own lunch time on the <b>Shift Patterns</b> tab. Give an earlier-starting pattern (e.g. UK Early) an earlier lunch than a later one (e.g. UK Standard) and Auto-assign will keep them staggered automatically.</div>
       <div class="hint" style="margin:0;">More scheduling rules will appear here as they're added.</div>
     </div>
-  </section>
 
-  <!-- ===================== CALENDAR TAB ===================== -->
-  <section class="tab-page hidden" id="tab-calendar">
-    <div class="panel">
-      <div class="cal-nav">
-        <button id="btnPrevMonth">← Prev</button>
-        <span id="calMonthLabel">–</span>
-        <button id="btnNextMonth">Next →</button>
-        <button id="btnCalToday" class="small">This month</button>
-      </div>
-      <div class="hint">Click any day to jump to that week in the Weekly Rota. Days shown in grey haven't been opened/planned yet.</div>
-      <table class="cal" id="calTable"></table>
-    </div>
-  </section>
-
-  <!-- ===================== TIMELINE (GANTT) TAB ===================== -->
-  <section class="tab-page hidden" id="tab-timeline">
-    <div class="panel">
-      <h2>Timeline</h2>
-      <div class="hint">Everyone's hours for one day, plotted on a single UK-time axis so you can see overlaps between UK and US, and around Showroom/meeting slots. Uses the week currently selected on <b>Weekly Rota</b> — switch weeks there, then come back here.</div>
-      <div id="timelineDateLabel" class="timeline-date-label"></div>
-      <div class="timeline-daypicker" id="timelineDayPicker">
-        <button type="button" class="timeline-day-btn" data-day="Mon">Mon</button>
-        <button type="button" class="timeline-day-btn" data-day="Tue">Tue</button>
-        <button type="button" class="timeline-day-btn" data-day="Wed">Wed</button>
-        <button type="button" class="timeline-day-btn" data-day="Thu">Thu</button>
-        <button type="button" class="timeline-day-btn" data-day="Fri">Fri</button>
-        <button type="button" class="timeline-day-btn" data-day="Sat">Sat</button>
-        <button type="button" class="timeline-day-btn" data-day="Sun">Sun</button>
-      </div>
-      <div class="timeline-legend">
-        <span><i class="tl-swatch" style="background:var(--working);"></i>Working</span>
-        <span><i class="tl-swatch" style="background:var(--lunch); border:1px solid var(--lunch-text);"></i>Lunch</span>
-        <span><i class="tl-swatch" style="background:var(--showroom); border:1px solid var(--showroom-text);"></i>Showroom</span>
-        <span><i class="tl-swatch" style="background:var(--meeting-text);"></i>Meeting</span>
-      </div>
-      <div class="timeline-scroll">
-        <div id="timelineChart"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== TEAM & BANK HOLIDAYS TAB ===================== -->
-  <section class="tab-page hidden" id="tab-team">
     <div class="panel">
       <h2>Team defaults</h2>
       <table class="team-table" id="teamTable">
@@ -448,29 +373,6 @@
         <tbody id="teamTableBody"></tbody>
       </table>
       <button id="btnAddPerson" class="small">+ Add team member</button>
-
-      <h2 style="margin-top:18px;">Staff holidays</h2>
-      <div class="hint">Booking here automatically marks those weekdays as Holiday on the Weekly Rota (creating the week if it doesn't exist yet). Weekends in the range are skipped.</div>
-      <div class="holiday-list" id="holidayEntriesList"></div>
-      <div class="field-row">
-        <div class="field"><label>Person</label><select id="newLeavePerson"></select></div>
-        <div class="field"><label>Start date</label><input type="date" id="newLeaveStart" /></div>
-        <div class="field"><label>End date</label><input type="date" id="newLeaveEnd" /></div>
-        <div class="field" style="max-width:150px;">
-          <label>Day portion</label>
-          <select id="newLeavePortion">
-            <option value="FULL">Full day</option>
-            <option value="AM">Morning (AM) only</option>
-            <option value="PM">Afternoon (PM) only</option>
-          </select>
-        </div>
-        <div class="field"><label>Note</label><input type="text" id="newLeaveNote" placeholder="optional" /></div>
-        <div class="field" style="max-width:110px; justify-content:flex-end;"><button id="btnAddLeave" class="small primary">+ Book</button></div>
-      </div>
-      <div class="hint" id="portionRangeHint" style="display:none; margin-top:-6px;">Day portion only applies to a single-day booking — this will be booked as a full day for each date in the range.</div>
-
-      <div class="hint" style="margin-top:14px;">Once holiday is booked, fill in the rest of those weeks (desk shifts + Showroom) from your Shift Patterns and see if anything's short-staffed.</div>
-      <button id="btnAutoFillHolidayWeeks" class="primary small">🪄 Auto-fill weeks with booked holiday</button>
 
       <h2 style="margin-top:18px;">Bank holidays</h2>
       <div class="hint">Built-in UK &amp; US 2026 holidays shown below. Add your own for other years or company closures.</div>
@@ -594,11 +496,15 @@
   function defaultPatterns(){
     var ukEarly = {Mon:1,Tue:1,Wed:1,Thu:1,Fri:1,Sat:0,Sun:0};
     var ukStandard = {Mon:3,Tue:3,Wed:3,Thu:3,Fri:3,Sat:0,Sun:0};
+    var ukLate = {Mon:0,Tue:0,Wed:0,Thu:0,Fri:0,Sat:0,Sun:0};
     var usFull = {Mon:2,Tue:2,Wed:2,Thu:2,Fri:2,Sat:0,Sun:0};
+    var usLate = {Mon:0,Tue:0,Wed:0,Thu:0,Fri:0,Sat:0,Sun:0};
     return [
-      {id:genId("sp"), name:"UK Early", office:"UK", start:"08:30", end:"16:30", lunchStart:"12:00", lunchEnd:"13:00", required: Object.assign({}, ukEarly)},
-      {id:genId("sp"), name:"UK Standard", office:"UK", start:"09:00", end:"17:30", lunchStart:"13:00", lunchEnd:"14:00", required: Object.assign({}, ukStandard)},
-      {id:genId("sp"), name:"US Standard", office:"US", start:"09:00", end:"17:30", lunchStart:"13:00", lunchEnd:"14:00", required: Object.assign({}, usFull)}
+      {id:genId("sp"), name:"UK Early", office:"UK", start:"08:30", end:"16:30", lunchStart:"11:30", lunchEnd:"12:30", required: Object.assign({}, ukEarly)},
+      {id:genId("sp"), name:"UK Standard", office:"UK", start:"09:00", end:"17:30", lunchStart:"12:30", lunchEnd:"13:30", required: Object.assign({}, ukStandard)},
+      {id:genId("sp"), name:"UK Late", office:"UK", start:"09:30", end:"18:00", lunchStart:"13:30", lunchEnd:"14:30", required: Object.assign({}, ukLate)},
+      {id:genId("sp"), name:"US Standard", office:"US", start:"09:00", end:"17:30", lunchStart:"13:00", lunchEnd:"14:00", required: Object.assign({}, usFull)},
+      {id:genId("sp"), name:"US Late", office:"US", start:"12:00", end:"20:30", lunchStart:"16:00", lunchEnd:"17:00", required: Object.assign({}, usLate)}
     ];
   }
 
@@ -622,8 +528,6 @@
 
   var state = loadState();
   var currentMonday = getMonday(new Date());
-  var currentCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-  var timelineDay = DAY_NAMES[(new Date().getDay() + 6) % 7];
 
   function migrateState(parsed){
     if (!parsed.customHolidays) parsed.customHolidays = [];
@@ -794,12 +698,11 @@
     document.querySelectorAll(".tab-btn").forEach(function(btn){
       btn.classList.toggle("active", btn.getAttribute("data-tab") === tabId);
     });
-    if (tabId === "rota") renderAll();
-    if (tabId === "patterns") { renderPatternsTable(); renderShowroomReqTable(); }
-    if (tabId === "rules") renderRulesTab();
-    if (tabId === "calendar") renderCalendarPage();
-    if (tabId === "timeline") renderTimelinePage();
-    if (tabId === "team") { renderTeamTable(); renderHolidayList(); renderHolidaysPage(); }
+    if (tabId === "rota") { renderAll(); renderHolidaysPage(); }
+    if (tabId === "settings") {
+      renderPatternsTable(); renderShowroomReqTable(); renderRulesTab();
+      renderTeamTable(); renderHolidayList();
+    }
   }
 
   document.querySelectorAll(".tab-btn").forEach(function(btn){
@@ -1213,38 +1116,6 @@
     }
   });
 
-  function planAheadWeeks(numWeeks){
-    var thisMonday = getMonday(new Date());
-    var allShortfalls = [];
-    var weeksPlanned = [];
-    for (var i = 1; i <= numWeeks; i++){
-      var monday = new Date(thisMonday.getFullYear(), thisMonday.getMonth(), thisMonday.getDate() + i * 7);
-      var wk = fmtDate(monday);
-      var shortfalls = runAutoAssign(wk);
-      weeksPlanned.push(wk);
-      shortfalls.forEach(function(s){ allShortfalls.push(wk + " — " + s); });
-    }
-    return {weeksPlanned: weeksPlanned, shortfalls: allShortfalls};
-  }
-
-  document.getElementById("btnPlanAhead").addEventListener("click", function(){
-    var n = parseInt(document.getElementById("planAheadWeeks").value, 10) || 1;
-    n = Math.max(1, Math.min(26, n));
-    if (!confirm("Auto-assign the next " + n + " week" + (n === 1 ? "" : "s") + " (starting next Monday) from your Shift Patterns? This overwrites hours/showroom/pattern for every day in that range that isn't already marked Holiday or Off — any holidays already booked under Team & Holidays are left untouched.")) return;
-    var result = planAheadWeeks(n);
-    renderAll();
-    var first = result.weeksPlanned[0], last = result.weeksPlanned[result.weeksPlanned.length - 1];
-    var msg = "Planned " + result.weeksPlanned.length + " week" + (result.weeksPlanned.length === 1 ? "" : "s") + " ahead (" + first + " to " + last + ").";
-    if (result.shortfalls.length){
-      var shown = result.shortfalls.slice(0, 20);
-      msg += "\n\nShort-staffed:\n" + shown.join("\n");
-      if (result.shortfalls.length > shown.length) msg += "\n...and " + (result.shortfalls.length - shown.length) + " more.";
-    } else {
-      msg += " Fully staffed throughout.";
-    }
-    alert(msg);
-  });
-
   // ---------- Shift Patterns tab ----------
 
   function renderPatternsTable(){
@@ -1350,7 +1221,7 @@
     saveState();
   });
 
-  // ---------- Staff Holidays (part of Team & Holidays tab) ----------
+  // ---------- Staff Holidays (part of Rota tab) ----------
 
   function countWorkingDays(startStr, endStr){
     var start = new Date(startStr + "T00:00:00");
@@ -1499,264 +1370,6 @@
       msg += " No staffing issues found.";
     }
     alert(msg);
-  });
-
-  // ---------- Calendar tab ----------
-
-  function renderCalendarPage(){
-    var label = currentCalendarMonth.toLocaleDateString("en-GB", {month:"long", year:"numeric"});
-    document.getElementById("calMonthLabel").textContent = label;
-
-    var firstOfMonth = currentCalendarMonth;
-    var gridStart = getMonday(firstOfMonth);
-    var table = document.getElementById("calTable");
-
-    var thead = "<thead><tr>" + DAY_NAMES.map(function(dn){ return "<th>" + dn + "</th>"; }).join("") + "</tr></thead>";
-    var tbody = "<tbody>";
-
-    for (var row = 0; row < 6; row++){
-      tbody += "<tr>";
-      for (var col = 0; col < 7; col++){
-        var d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + row*7 + col);
-        var inMonth = d.getMonth() === firstOfMonth.getMonth();
-        var dateStr = fmtDate(d);
-        var monday = getMonday(d);
-        var wk = fmtDate(monday);
-        var dayIdx = col;
-        var dayName = DAY_NAMES[dayIdx];
-        var planned = !!state.weeks[wk];
-
-        var cellClasses = ["cal-cell"];
-        if (!inMonth) cellClasses.push("other-month");
-        if (!planned) cellClasses.push("not-planned");
-
-        var inner = '<div class="cal-daynum">' + d.getDate() + "</div>";
-
-        holidaysOnDate(dateStr).forEach(function(h){
-          inner += '<span class="tag bankhol">' + escapeHtml(h.name) + "</span>";
-        });
-
-        if (planned){
-          var dayObj = state.weeks[wk].days[dayName];
-          var onHoliday = state.team.filter(function(p){
-            var e = dayObj.entries[p.id];
-            return e && e.status === "holiday";
-          });
-          onHoliday.forEach(function(p){
-            var e = dayObj.entries[p.id];
-            var portionSuffix = e.holidayPortion === "AM" ? " (AM)" : e.holidayPortion === "PM" ? " (PM)" : "";
-            inner += '<span class="cal-person-off">' + escapeHtml(p.name) + " off" + portionSuffix + "</span>";
-          });
-
-          ["UK","US"].forEach(function(office){
-            var required = state.shiftPatterns
-              .filter(function(sp){ return sp.office === office; })
-              .reduce(function(sum, sp){ return sum + ((sp.required && sp.required[dayName]) || 0); }, 0);
-            if (required === 0) return;
-            var working = state.team.filter(function(p){
-              var e = dayObj.entries[p.id];
-              return p.office === office && e && e.status === "working";
-            }).length;
-            if (working < required){
-              inner += '<div class="cal-warn">⚠ ' + office + " " + working + "/" + required + "</div>";
-            }
-          });
-        }
-
-        tbody += '<td class="' + cellClasses.join(" ") + '" data-date="' + dateStr + '">' + inner + "</td>";
-      }
-      tbody += "</tr>";
-    }
-    tbody += "</tbody>";
-
-    table.innerHTML = thead + tbody;
-    table.querySelectorAll("td[data-date]").forEach(function(td){
-      td.addEventListener("click", function(){
-        var ds = td.getAttribute("data-date");
-        currentMonday = getMonday(new Date(ds + "T00:00:00"));
-        switchTab("rota");
-      });
-    });
-  }
-
-  document.getElementById("btnPrevMonth").addEventListener("click", function(){
-    currentCalendarMonth = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth()-1, 1);
-    renderCalendarPage();
-  });
-  document.getElementById("btnNextMonth").addEventListener("click", function(){
-    currentCalendarMonth = new Date(currentCalendarMonth.getFullYear(), currentCalendarMonth.getMonth()+1, 1);
-    renderCalendarPage();
-  });
-  document.getElementById("btnCalToday").addEventListener("click", function(){
-    currentCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    renderCalendarPage();
-  });
-
-  // ---------- Timeline (Gantt) tab ----------
-
-  function officeTimeZone(office){
-    return office === "UK" ? "Europe/London" : "America/New_York";
-  }
-
-  function tzOffsetMinutes(date, timeZone){
-    var dtf = new Intl.DateTimeFormat("en-US", {
-      timeZone: timeZone, hourCycle: "h23",
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit"
-    });
-    var parts = {};
-    dtf.formatToParts(date).forEach(function(p){ if (p.type !== "literal") parts[p.type] = p.value; });
-    var asUTC = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
-    return (asUTC - date.getTime()) / 60000;
-  }
-
-  function minutesFromHHMM(hhmm){
-    if (!hhmm) return null;
-    var parts = hhmm.split(":");
-    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-  }
-
-  function officeRawMinutesToUKMinutes(office, rawMinutes, refDate){
-    if (office === "UK" || rawMinutes === null) return rawMinutes;
-    var ukOffset = tzOffsetMinutes(refDate, "Europe/London");
-    var officeOffset = tzOffsetMinutes(refDate, officeTimeZone(office));
-    return rawMinutes + (ukOffset - officeOffset);
-  }
-
-  function officeHHMMToUKMinutes(office, hhmm, refDate){
-    return officeRawMinutesToUKMinutes(office, minutesFromHHMM(hhmm), refDate);
-  }
-
-  function renderTimelineRow(r, pct){
-    var p = r.person;
-    var left = pct(r.startMin), width = pct(r.endMin) - pct(r.startMin);
-    var html = '<div class="timeline-row"><div class="tl-name">' + escapeHtml(p.name) +
-      (p.role === "Manager" ? ' <span class="muted" style="font-weight:400;font-size:10px;">(Mgr)</span>' : "") + "</div>";
-    html += '<div class="tl-track">';
-    html += '<div class="tl-bar" style="left:' + left + '%; width:' + width + '%;" title="' +
-      escapeHtml(p.name) + ": " + r.entry.start + "–" + r.entry.end + '"></div>';
-    if (r.lunchStartMin !== null && r.lunchEndMin !== null){
-      var lLeft = pct(r.lunchStartMin), lWidth = pct(r.lunchEndMin) - pct(r.lunchStartMin);
-      html += '<div class="tl-lunch" style="left:' + lLeft + '%; width:' + lWidth + '%;" title="Lunch ' +
-        r.entry.lunchStart + "–" + r.entry.lunchEnd + '"></div>';
-    }
-    if (r.showroomSeg){
-      var sLeft = pct(r.showroomSeg.start), sWidth = pct(r.showroomSeg.end) - pct(r.showroomSeg.start);
-      html += '<div class="tl-showroom" style="left:' + sLeft + '%; width:' + sWidth + '%;" title="Showroom ' +
-        r.showroomSeg.label + '"></div>';
-    }
-    r.meetings.forEach(function(m){
-      var mLeft = pct(m.start), mWidth = Math.max(pct(m.end) - pct(m.start), 1);
-      html += '<div class="tl-meeting" style="left:' + mLeft + '%; width:' + mWidth + '%;" title="' +
-        escapeHtml(m.title || "Meeting") + '"></div>';
-    });
-    html += "</div></div>";
-    return html;
-  }
-
-  function renderTimelinePage(){
-    var weekKey = fmtDate(currentMonday);
-    ensureWeek(weekKey, false);
-    var dates = weekDates(currentMonday);
-    var dayIdx = DAY_NAMES.indexOf(timelineDay);
-    var dayDate = dates[dayIdx];
-    var refDate = new Date(Date.UTC(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), 12, 0, 0));
-    var dayObj = state.weeks[weekKey].days[timelineDay];
-
-    document.querySelectorAll(".timeline-day-btn").forEach(function(btn){
-      btn.classList.toggle("active", btn.getAttribute("data-day") === timelineDay);
-    });
-    document.getElementById("timelineDateLabel").textContent =
-      dayDate.toLocaleDateString("en-GB", {weekday: "long", day: "numeric", month: "long", year: "numeric"}) + " (times shown in UK time)";
-
-    var rows = [];
-    var offRows = [];
-    state.team.forEach(function(p){
-      var e = dayObj.entries[p.id];
-      if (!e || e.status !== "working" || !e.start || !e.end){
-        offRows.push({person: p, entry: e});
-        return;
-      }
-      var startMin = officeHHMMToUKMinutes(p.office, e.start, refDate);
-      var endMin = officeHHMMToUKMinutes(p.office, e.end, refDate);
-      var lunchStartMin = e.lunchStart ? officeHHMMToUKMinutes(p.office, e.lunchStart, refDate) : null;
-      var lunchEndMin = e.lunchEnd ? officeHHMMToUKMinutes(p.office, e.lunchEnd, refDate) : null;
-      var meetings = (e.meetings || []).map(function(m){
-        return {
-          start: officeHHMMToUKMinutes(p.office, m.start, refDate),
-          end: officeHHMMToUKMinutes(p.office, m.end, refDate),
-          title: m.title
-        };
-      }).filter(function(m){ return m.start !== null && m.end !== null; });
-
-      var showroomSeg = null;
-      if (p.office === "UK" && e.showroom){
-        var rawStart = minutesFromHHMM(e.start), rawEnd = minutesFromHHMM(e.end);
-        var rawLunchStart = e.lunchStart ? minutesFromHHMM(e.lunchStart) : null;
-        var rawLunchEnd = e.lunchEnd ? minutesFromHHMM(e.lunchEnd) : null;
-        var mid = (rawStart + rawEnd) / 2;
-        var segStartRaw, segEndRaw;
-        if (e.showroom === "AM"){ segStartRaw = rawStart; segEndRaw = rawLunchStart !== null ? rawLunchStart : mid; }
-        else if (e.showroom === "PM"){ segStartRaw = rawLunchEnd !== null ? rawLunchEnd : mid; segEndRaw = rawEnd; }
-        else { segStartRaw = rawStart; segEndRaw = rawEnd; }
-        showroomSeg = {
-          start: officeRawMinutesToUKMinutes(p.office, segStartRaw, refDate),
-          end: officeRawMinutesToUKMinutes(p.office, segEndRaw, refDate),
-          label: e.showroom
-        };
-      }
-
-      rows.push({person: p, entry: e, startMin: startMin, endMin: endMin, lunchStartMin: lunchStartMin, lunchEndMin: lunchEndMin, meetings: meetings, showroomSeg: showroomSeg});
-    });
-
-    var container = document.getElementById("timelineChart");
-    if (!rows.length){
-      container.innerHTML = '<div class="hint" style="margin:20px 0;">Nobody is scheduled to work this day.</div>';
-      return;
-    }
-
-    var minStart = Math.min.apply(null, rows.map(function(r){ return r.startMin; }));
-    var maxEnd = Math.max.apply(null, rows.map(function(r){ return r.endMin; }));
-    var axisStartHour = Math.max(0, Math.floor(minStart / 60) - 1);
-    var axisEndHour = Math.min(24, Math.ceil(maxEnd / 60) + 1);
-    var axisStartMin = axisStartHour * 60, axisEndMin = axisEndHour * 60;
-    var totalMin = axisEndMin - axisStartMin;
-
-    function pct(min){
-      var clamped = Math.max(axisStartMin, Math.min(axisEndMin, min));
-      return (clamped - axisStartMin) / totalMin * 100;
-    }
-
-    var rulerHtml = '<div class="timeline-ruler-row"><div class="tl-name-spacer"></div><div class="timeline-axis">';
-    for (var h = axisStartHour; h <= axisEndHour; h++){
-      rulerHtml += '<span class="hr-label" style="left:' + pct(h * 60) + '%;">' + String(h).padStart(2, "0") + ":00</span>";
-    }
-    rulerHtml += "</div></div>";
-
-    var bodyHtml = "";
-    ["UK", "US"].forEach(function(office){
-      var officeRows = rows.filter(function(r){ return r.person.office === office; });
-      var officeOffRows = offRows.filter(function(r){ return r.person.office === office; });
-      if (!officeRows.length && !officeOffRows.length) return;
-      bodyHtml += '<div class="timeline-office-header">' + (office === "UK" ? "UK Office" : "US Office (Charlotte, NC)") + "</div>";
-      officeRows.forEach(function(r){ bodyHtml += renderTimelineRow(r, pct); });
-      officeOffRows.forEach(function(r){
-        var label = "Not working";
-        if (!r.entry || r.entry.status === "off") label = "Off";
-        else if (r.entry.status === "holiday") label = r.entry.holidayPortion === "AM" ? "Holiday (AM)" : r.entry.holidayPortion === "PM" ? "Holiday (PM)" : "Holiday";
-        bodyHtml += '<div class="timeline-row"><div class="tl-name">' + escapeHtml(r.person.name) +
-          '</div><div class="tl-track tl-track-empty"><span class="tl-offlabel">' + label + "</span></div></div>";
-      });
-    });
-
-    container.innerHTML = rulerHtml + '<div class="timeline-body">' + bodyHtml + "</div>";
-  }
-
-  document.querySelectorAll(".timeline-day-btn").forEach(function(btn){
-    btn.addEventListener("click", function(){
-      timelineDay = btn.getAttribute("data-day");
-      renderTimelinePage();
-    });
   });
 
   // ---------- Team & Bank Holidays tab ----------
